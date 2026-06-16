@@ -1,0 +1,4 @@
+# Copy this file to application-local.properties in the same folder
+# (or to backend/application-local.properties) and set your MySQL password.
+#
+# spring.datasource.password=your_mysql_password

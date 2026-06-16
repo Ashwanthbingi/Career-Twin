@@ -10,7 +10,8 @@ import java.util.Optional;
 
 public interface UserSkillRepository extends JpaRepository<UserSkill, Long> {
 
-    List<UserSkill> findByUserId(Long userId);
+    @Query("SELECT us FROM UserSkill us JOIN FETCH us.skill WHERE us.user.id = :userId")
+    List<UserSkill> findByUserId(@Param("userId") Long userId);
 
     Optional<UserSkill> findByUserIdAndSkillId(Long userId, Long skillId);
 

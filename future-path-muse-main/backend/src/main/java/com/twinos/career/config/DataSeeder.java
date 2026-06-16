@@ -35,13 +35,14 @@ public class DataSeeder {
             RoleSkillRepository roleSkillRepository
     ) {
         return args -> {
+            seedUsers(userRepository);
+
             if (skillRepository.count() > 0 && jobRoleRepository.count() > 0 && roleSkillRepository.count() > 0) {
                 return;
             }
 
             RoleDataset roleDataset = loadRoleDataset();
             Map<String, Skill> skills = seedSkills(skillRepository, roleDataset.skills());
-            seedUsers(userRepository);
             seedJobRoles(jobRoleRepository, roleSkillRepository, skills, roleDataset.roleDescriptions(), roleDataset.roleSkills());
         };
     }
