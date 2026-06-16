@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 const links = [
   { to: "/features", label: "Features" },
   { to: "/digital-twin", label: "Twin" },
-  { to: "/career-simulator", label: "Simulator" },
+  { to: "/skill-validation", label: "Validation" },
+  { to: "/github-analyzer", label: "GitHub" },
+  { to: "/leetcode-intelligence", label: "LeetCode" },
   { to: "/roadmap", label: "Roadmap" },
   { to: "/ai-mentor", label: "Mentor" },
   { to: "/vision", label: "Vision" },

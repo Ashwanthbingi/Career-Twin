@@ -15,6 +15,7 @@ import { Nav } from "../components/Nav";
 import { Footer } from "../components/Footer";
 import { AmbientBackground } from "../components/AmbientBackground";
 import { ThreeBackground } from "../components/ThreeBackground";
+import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -111,6 +112,7 @@ function RootComponent() {
         <Nav />
         <Outlet />
         <Footer />
+        <Toaster richColors position="top-right" />
       </div>
     </QueryClientProvider>
   );

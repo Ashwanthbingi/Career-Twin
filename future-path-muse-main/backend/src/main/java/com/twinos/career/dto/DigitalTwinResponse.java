@@ -1,44 +1,28 @@
 package com.twinos.career.dto;
 
-public class DigitalTwinResponse {
+import java.util.List;
 
-    private String name;
-    private int readinessScore;
-    private int skillsCount;
-    private int projectsCount;
-    private String topCareer;
-
-    public DigitalTwinResponse(
-            String name,
-            int readinessScore,
-            int skillsCount,
-            int projectsCount,
-            String topCareer) {
-
-        this.name = name;
-        this.readinessScore = readinessScore;
-        this.skillsCount = skillsCount;
-        this.projectsCount = projectsCount;
-        this.topCareer = topCareer;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getReadinessScore() {
-        return readinessScore;
-    }
-
-    public int getSkillsCount() {
-        return skillsCount;
-    }
-
-    public int getProjectsCount() {
-        return projectsCount;
-    }
-
-    public String getTopCareer() {
-        return topCareer;
-    }
+public record DigitalTwinResponse(
+        Long userId,
+        String userName,
+        int readinessScore,
+        String topCareer,
+        Long topCareerRoleId,
+        List<SkillDto> detectedSkills,
+        List<SkillDto> missingSkills,
+        List<String> strengths,
+        List<String> weaknesses,
+        String projectedCareer,
+        String salaryProjection,
+        int skillsCount,
+        int projectsCount,
+        String lastUpdatedAt,
+        List<SkillGraphDto> skillGraph,
+        List<CareerMatchDto> careerMatches,
+        SkillGapResponse skillGap,
+        RoadmapResponse roadmap,
+        boolean hasResume,
+        boolean hasGitHubProfile,
+        boolean hasLeetCodeProfile
+) {
 }

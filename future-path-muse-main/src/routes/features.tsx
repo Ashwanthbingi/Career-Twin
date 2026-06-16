@@ -9,7 +9,7 @@ export const Route = createFileRoute("/features")({
       {
         name: "description",
         content:
-          "Skill graphs, AI recommendations, career simulation, roadmap generation, and an always-on mentor.",
+          "Skill graphs, evidence validation, AI recommendations, roadmap generation, and an always-on mentor.",
       },
     ],
   }),
@@ -29,8 +29,8 @@ const features = [
   },
   {
     tag: "03",
-    title: "Career Simulator",
-    body: "Run Monte Carlo simulations across decades — salary, satisfaction, market relevance.",
+    title: "Evidence-Based Skill Validation",
+    body: "Score every extracted skill against resume and GitHub proof before trusting it in the twin.",
   },
   {
     tag: "04",

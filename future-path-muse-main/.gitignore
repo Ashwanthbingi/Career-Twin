@@ -34,3 +34,4 @@ dist-ssr
 # Java backend
 backend/target/
 backend/.tools/
+backend/data/

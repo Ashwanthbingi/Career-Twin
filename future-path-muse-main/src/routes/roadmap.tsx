@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
 import roadmapImg from "@/assets/roadmap.jpg";
 import { useSkillGap } from "@/hooks/useSkillGap";
 import { useRoadmap } from "@/hooks/useRoadmap";
+import { useDigitalTwin } from "@/hooks/useDigitalTwin";
 import { AlertCircle, RefreshCw, CheckCircle, HelpCircle } from "lucide-react";
 
 export const Route = createFileRoute("/roadmap")({
@@ -30,7 +31,14 @@ const ROLES = [
 ];
 
 function Roadmap() {
-  const [selectedRoleId, setSelectedRoleId] = useState(1);
+  const { data: twin } = useDigitalTwin(1);
+  const [selectedRoleId, setSelectedRoleId] = useState(() => twin?.topCareerRoleId ?? 1);
+
+  useEffect(() => {
+    if (twin?.topCareerRoleId) {
+      setSelectedRoleId(twin.topCareerRoleId);
+    }
+  }, [twin?.topCareerRoleId]);
   const {
     data: skillGap,
     isLoading: gapLoading,

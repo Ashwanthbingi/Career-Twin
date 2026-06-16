@@ -10,11 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VisionRouteImport } from './routes/vision'
+import { Route as SkillValidationRouteImport } from './routes/skill-validation'
 import { Route as RoadmapRouteImport } from './routes/roadmap'
+import { Route as LeetcodeIntelligenceRouteImport } from './routes/leetcode-intelligence'
+import { Route as GithubAnalyzerRouteImport } from './routes/github-analyzer'
 import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as DigitalTwinRouteImport } from './routes/digital-twin'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as CareerSimulatorRouteImport } from './routes/career-simulator'
 import { Route as AiMentorRouteImport } from './routes/ai-mentor'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -23,9 +25,24 @@ const VisionRoute = VisionRouteImport.update({
   path: '/vision',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SkillValidationRoute = SkillValidationRouteImport.update({
+  id: '/skill-validation',
+  path: '/skill-validation',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RoadmapRoute = RoadmapRouteImport.update({
   id: '/roadmap',
   path: '/roadmap',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeetcodeIntelligenceRoute = LeetcodeIntelligenceRouteImport.update({
+  id: '/leetcode-intelligence',
+  path: '/leetcode-intelligence',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GithubAnalyzerRoute = GithubAnalyzerRouteImport.update({
+  id: '/github-analyzer',
+  path: '/github-analyzer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FeaturesRoute = FeaturesRouteImport.update({
@@ -43,11 +60,6 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CareerSimulatorRoute = CareerSimulatorRouteImport.update({
-  id: '/career-simulator',
-  path: '/career-simulator',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AiMentorRoute = AiMentorRouteImport.update({
   id: '/ai-mentor',
   path: '/ai-mentor',
@@ -62,32 +74,38 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ai-mentor': typeof AiMentorRoute
-  '/career-simulator': typeof CareerSimulatorRoute
   '/contact': typeof ContactRoute
   '/digital-twin': typeof DigitalTwinRoute
   '/features': typeof FeaturesRoute
+  '/github-analyzer': typeof GithubAnalyzerRoute
+  '/leetcode-intelligence': typeof LeetcodeIntelligenceRoute
   '/roadmap': typeof RoadmapRoute
+  '/skill-validation': typeof SkillValidationRoute
   '/vision': typeof VisionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ai-mentor': typeof AiMentorRoute
-  '/career-simulator': typeof CareerSimulatorRoute
   '/contact': typeof ContactRoute
   '/digital-twin': typeof DigitalTwinRoute
   '/features': typeof FeaturesRoute
+  '/github-analyzer': typeof GithubAnalyzerRoute
+  '/leetcode-intelligence': typeof LeetcodeIntelligenceRoute
   '/roadmap': typeof RoadmapRoute
+  '/skill-validation': typeof SkillValidationRoute
   '/vision': typeof VisionRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/ai-mentor': typeof AiMentorRoute
-  '/career-simulator': typeof CareerSimulatorRoute
   '/contact': typeof ContactRoute
   '/digital-twin': typeof DigitalTwinRoute
   '/features': typeof FeaturesRoute
+  '/github-analyzer': typeof GithubAnalyzerRoute
+  '/leetcode-intelligence': typeof LeetcodeIntelligenceRoute
   '/roadmap': typeof RoadmapRoute
+  '/skill-validation': typeof SkillValidationRoute
   '/vision': typeof VisionRoute
 }
 export interface FileRouteTypes {
@@ -95,42 +113,50 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/ai-mentor'
-    | '/career-simulator'
     | '/contact'
     | '/digital-twin'
     | '/features'
+    | '/github-analyzer'
+    | '/leetcode-intelligence'
     | '/roadmap'
+    | '/skill-validation'
     | '/vision'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/ai-mentor'
-    | '/career-simulator'
     | '/contact'
     | '/digital-twin'
     | '/features'
+    | '/github-analyzer'
+    | '/leetcode-intelligence'
     | '/roadmap'
+    | '/skill-validation'
     | '/vision'
   id:
     | '__root__'
     | '/'
     | '/ai-mentor'
-    | '/career-simulator'
     | '/contact'
     | '/digital-twin'
     | '/features'
+    | '/github-analyzer'
+    | '/leetcode-intelligence'
     | '/roadmap'
+    | '/skill-validation'
     | '/vision'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AiMentorRoute: typeof AiMentorRoute
-  CareerSimulatorRoute: typeof CareerSimulatorRoute
   ContactRoute: typeof ContactRoute
   DigitalTwinRoute: typeof DigitalTwinRoute
   FeaturesRoute: typeof FeaturesRoute
+  GithubAnalyzerRoute: typeof GithubAnalyzerRoute
+  LeetcodeIntelligenceRoute: typeof LeetcodeIntelligenceRoute
   RoadmapRoute: typeof RoadmapRoute
+  SkillValidationRoute: typeof SkillValidationRoute
   VisionRoute: typeof VisionRoute
 }
 
@@ -143,11 +169,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VisionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/skill-validation': {
+      id: '/skill-validation'
+      path: '/skill-validation'
+      fullPath: '/skill-validation'
+      preLoaderRoute: typeof SkillValidationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/roadmap': {
       id: '/roadmap'
       path: '/roadmap'
       fullPath: '/roadmap'
       preLoaderRoute: typeof RoadmapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leetcode-intelligence': {
+      id: '/leetcode-intelligence'
+      path: '/leetcode-intelligence'
+      fullPath: '/leetcode-intelligence'
+      preLoaderRoute: typeof LeetcodeIntelligenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/github-analyzer': {
+      id: '/github-analyzer'
+      path: '/github-analyzer'
+      fullPath: '/github-analyzer'
+      preLoaderRoute: typeof GithubAnalyzerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/features': {
@@ -171,13 +218,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/career-simulator': {
-      id: '/career-simulator'
-      path: '/career-simulator'
-      fullPath: '/career-simulator'
-      preLoaderRoute: typeof CareerSimulatorRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/ai-mentor': {
       id: '/ai-mentor'
       path: '/ai-mentor'
@@ -198,11 +238,13 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AiMentorRoute: AiMentorRoute,
-  CareerSimulatorRoute: CareerSimulatorRoute,
   ContactRoute: ContactRoute,
   DigitalTwinRoute: DigitalTwinRoute,
   FeaturesRoute: FeaturesRoute,
+  GithubAnalyzerRoute: GithubAnalyzerRoute,
+  LeetcodeIntelligenceRoute: LeetcodeIntelligenceRoute,
   RoadmapRoute: RoadmapRoute,
+  SkillValidationRoute: SkillValidationRoute,
   VisionRoute: VisionRoute,
 }
 export const routeTree = rootRouteImport

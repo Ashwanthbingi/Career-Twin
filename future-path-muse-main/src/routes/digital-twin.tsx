@@ -5,8 +5,11 @@ import { Reveal } from "@/components/Reveal";
 import heroImg from "@/assets/hero-twin.jpg";
 import skillImg from "@/assets/skill-graph.jpg";
 import { useDigitalTwin } from "@/hooks/useDigitalTwin";
+import { useCurrentResume } from "@/hooks/useCurrentResume";
+import { useRefreshDigitalTwin } from "@/hooks/useRefreshDigitalTwin";
 import { useResumeUpload } from "@/hooks/useResumeUpload";
-import { AlertCircle, RefreshCw, Upload, CheckCircle } from "lucide-react";
+import { AlertCircle, Database, RefreshCw, Upload, CheckCircle } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/digital-twin")({
   head: () => ({
@@ -21,7 +24,7 @@ export const Route = createFileRoute("/digital-twin")({
   component: DigitalTwin,
 });
 
-const skills = [
+const skills: [string, number][] = [
   ["Systems Design", 92],
   ["Product Strategy", 87],
   ["Engineering Leadership", 79],
@@ -32,10 +35,13 @@ const skills = [
 
 function DigitalTwin() {
   const { data, isLoading, isError, error, refetch } = useDigitalTwin(1);
+  const resumeQuery = useCurrentResume(1);
+  const refreshMutation = useRefreshDigitalTwin();
   const uploadMutation = useResumeUpload();
 
   const [dragActive, setDragActive] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const handleFile = (file: File) => {
     if (!file.type.includes("pdf") && !file.name.endsWith(".pdf")) {
@@ -43,14 +49,35 @@ function DigitalTwin() {
       return;
     }
     setUploadError(null);
+    setUploadProgress(0);
     uploadMutation.mutate(
-      { userId: 1, file },
       {
+        userId: 1,
+        file,
+        onProgress: (progress) => setUploadProgress(progress),
+      },
+      {
+        onSuccess: (response) => {
+          toast.success("Digital twin recalibrated", {
+            description: `${response.detectedSkillCount} resume skills stored and synced across your dashboard.`,
+          });
+        },
         onError: (err) => {
           setUploadError(err instanceof Error ? err.message : "Failed to parse resume.");
         },
       },
     );
+  };
+
+  const handleRefreshTwin = () => {
+    refreshMutation.mutate(1, {
+      onSuccess: () => {
+        toast.success("Digital twin regenerated", {
+          description:
+            "Readiness score, top career, skill graph, and cached feature data were updated.",
+        });
+      },
+    });
   };
 
   const handleDrag = (e: React.DragEvent) => {
@@ -146,25 +173,64 @@ function DigitalTwin() {
     );
   }
 
-  const twin = data || {
-    name: "User",
-    readinessScore: 98,
-    skillsCount: 42184,
-    projectsCount: 12,
-    topCareer: "Systems Designer",
-  };
+  const twin = data;
+
+  if (!twin) {
+    return null;
+  }
+
+  const isRecalibrating = uploadMutation.isPending && uploadProgress >= 95;
+  const uploadStatusLabel = isRecalibrating
+    ? "Recalibrating Twin..."
+    : `Uploading resume... ${uploadProgress}%`;
 
   return (
     <main className="relative z-10">
       <PageHeader
-        eyebrow={`/ Digital Twin · Live Demo · ${twin.name}`}
+        eyebrow={`/ Digital Twin · MySQL · ${twin.userName}`}
         title={
           <>
             Meet the <span className="text-gradient">version of you</span> living in the cloud.
           </>
         }
-        subtitle={`A persistent neural model trained on ${twin.name}'s work, decisions, and ambitions — accurate to ${twin.readinessScore}%.`}
+        subtitle={`Live twin computed from persisted resume, GitHub, LeetCode, skills, career match, and roadmap data — accurate to ${twin.readinessScore}%.`}
       />
+
+      <section className="px-6">
+        <div className="max-w-7xl mx-auto flex justify-end">
+          <button
+            type="button"
+            onClick={handleRefreshTwin}
+            disabled={refreshMutation.isPending}
+            className="rounded-full bg-white/10 border border-white/10 px-4 py-2 text-xs font-semibold text-white hover:bg-white/15 disabled:opacity-50 flex items-center gap-2"
+          >
+            <RefreshCw className={`size-4 ${refreshMutation.isPending ? "animate-spin" : ""}`} />
+            Refresh Twin
+          </button>
+        </div>
+      </section>
+
+      <section className="pt-8 px-6">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-4">
+          <OverviewMetric label="Readiness Score" value={`${twin.readinessScore}%`} />
+          <OverviewMetric label="Top Career" value={twin.topCareer} />
+          <OverviewMetric label="Career Projection" value={twin.projectedCareer || twin.topCareer} />
+          <OverviewMetric label="Salary Projection" value={twin.salaryProjection || "Pending"} />
+        </div>
+      </section>
+
+      <section className="px-6 pt-4">
+        <div className="max-w-7xl mx-auto flex flex-wrap gap-2">
+          <PersistenceBadge label="Resume" active={twin.hasResume} />
+          <PersistenceBadge label="GitHub" active={twin.hasGitHubProfile} />
+          <PersistenceBadge label="LeetCode" active={twin.hasLeetCodeProfile} />
+          {resumeQuery.data && (
+            <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-muted-foreground px-3 py-1.5 rounded-full border border-white/10">
+              {resumeQuery.data.originalFilename} · {resumeQuery.data.detectedSkillCount} skills
+            </span>
+          )}
+        </div>
+      </section>
 
       <section className="px-6">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-[1.4fr_1fr] gap-6">
@@ -232,16 +298,25 @@ function DigitalTwin() {
                 </span>
               </div>
               <div className="space-y-5 flex-1">
-                {skills.map(([name, val]) => (
-                  <div key={name as string}>
+                {(twin.skillGraph && twin.skillGraph.length > 0
+                  ? twin.skillGraph
+                  : skills.map(([name, val]) => ({
+                      skillId: 0,
+                      name,
+                      category: "Technical",
+                      strength: val,
+                      evidenceCount: 1,
+                    }))
+                ).map((node) => (
+                  <div key={`${node.skillId}-${node.name}`}>
                     <div className="flex justify-between mb-2 text-xs font-mono">
-                      <span className="text-white/80">{name}</span>
-                      <span className="text-accent">{val}</span>
+                      <span className="text-white/80">{node.name}</span>
+                      <span className="text-accent">{node.strength}</span>
                     </div>
                     <div className="h-[3px] bg-white/5 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-accent to-white"
-                        style={{ width: `${val}%` }}
+                        style={{ width: `${node.strength}%` }}
                       />
                     </div>
                   </div>
@@ -262,18 +337,33 @@ function DigitalTwin() {
         </div>
       </section>
 
+      <section className="pt-6 px-6">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-6">
+          <SnapshotList title="Strengths" items={twin.strengths ?? []} tone="accent" />
+          <SnapshotList title="Weaknesses" items={twin.weaknesses ?? []} tone="muted" />
+          <SnapshotList
+            title="Missing Skills"
+            items={(twin.missingSkills ?? []).map((skill) => skill.name)}
+            tone="muted"
+          />
+        </div>
+        <div className="max-w-7xl mx-auto mt-4 text-right text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+          Last Updated {twin.lastUpdatedAt ? new Date(twin.lastUpdatedAt).toLocaleString() : "Pending"}
+        </div>
+      </section>
+
       {/* Resume Upload Sync Widget */}
       <section className="pt-16 px-6 max-w-7xl mx-auto">
         <Reveal>
           <div className="glass rounded-[2.5rem] p-8 md:p-10 border border-glass-border">
             <h3 className="font-display text-2xl font-bold mb-4 flex items-center gap-2">
-              <span className="size-2 bg-accent rounded-full animate-ping" />
-              Ingest & Re-calibrate Twin
+              <Database className="size-5 text-accent" />
+              Resume Stored Once · Twin Recalibrated
             </h3>
             <p className="text-sm text-muted-foreground max-w-2xl mb-8 leading-relaxed">
-              Upload your latest resume (PDF) to synchronize new projects and experience. Our
-              parsing model will extract your competencies, update your skill graph nodes, and
-              re-calculate your career match profiles dynamically.
+              Upload your resume once. The PDF is stored on disk, metadata lives in MySQL, and skills
+              persist across refresh — Career Match, Skill Gap, Roadmap, and Validation all read from
+              the database.
             </p>
 
             <div
@@ -300,25 +390,31 @@ function DigitalTwin() {
                 <div
                   className={`size-14 rounded-2xl flex items-center justify-center border ${
                     uploadMutation.isPending
-                      ? "bg-accent/10 border-accent/20 text-accent animate-spin"
+                      ? "bg-accent/10 border-accent/20 text-accent"
                       : "bg-white/5 border-white/10 text-muted-foreground"
                   }`}
                 >
                   {uploadMutation.isPending ? (
-                    <RefreshCw className="size-6" />
+                    <RefreshCw className="size-6 animate-spin" />
                   ) : (
                     <Upload className="size-6" />
                   )}
                 </div>
 
                 {uploadMutation.isPending ? (
-                  <div>
-                    <p className="text-sm text-white font-semibold">
-                      Uploading and analyzing resume...
-                    </p>
+                  <div className="w-full max-w-md">
+                    <p className="text-sm text-white font-semibold">{uploadStatusLabel}</p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      This takes a few seconds to run NLP extraction
+                      {isRecalibrating
+                        ? "Refreshing career match, skill gap, roadmap, and twin metrics."
+                        : "Securely sending your PDF for skill extraction."}
                     </p>
+                    <div className="mt-4 h-2 rounded-full bg-white/10 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-accent via-white to-emerald-300 transition-all duration-500 ease-out"
+                        style={{ width: `${Math.max(uploadProgress, 8)}%` }}
+                      />
+                    </div>
                   </div>
                 ) : (
                   <div>
@@ -348,19 +444,31 @@ function DigitalTwin() {
             )}
 
             {/* Success Message & Parsed Data display */}
-            {uploadMutation.isSuccess && uploadMutation.data && (
+            {(uploadMutation.isSuccess && uploadMutation.data) || resumeQuery.data ? (
               <div className="mt-6 p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 space-y-4">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="size-5 text-emerald-400" />
                   <h4 className="text-sm font-display font-bold text-white">
-                    Resume Synced Successfully!
+                    {uploadMutation.isSuccess ? "Resume Synced Successfully!" : "Resume Loaded from MySQL"}
                   </h4>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Detected {uploadMutation.data.detectedSkillCount} skill nodes on your resume:
+                  {uploadMutation.isSuccess && uploadMutation.data ? (
+                    <>
+                      Stored {uploadMutation.data.detectedSkillCount} skill nodes and refreshed{" "}
+                      {uploadMutation.data.refresh.careerMatchCount} cached career matches,{" "}
+                      {uploadMutation.data.refresh.missingSkillCount} skill gaps, and{" "}
+                      {uploadMutation.data.refresh.roadmapMilestoneCount} roadmap milestones.
+                    </>
+                  ) : (
+                    <>
+                      Active resume <span className="text-white">{resumeQuery.data?.originalFilename}</span>{" "}
+                      with {resumeQuery.data?.detectedSkillCount ?? 0} stored skills persists across refresh.
+                    </>
+                  )}
                 </p>
                 <div className="flex flex-wrap gap-1.5">
-                  {uploadMutation.data.detectedSkills.map((s) => (
+                  {(uploadMutation.data?.detectedSkills ?? []).map((s) => (
                     <span
                       key={s.id}
                       className="text-[10px] font-mono px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/20"
@@ -368,22 +476,25 @@ function DigitalTwin() {
                       {s.name}
                     </span>
                   ))}
-                  {uploadMutation.data.detectedSkillCount === 0 && (
-                    <span className="text-xs text-muted-foreground italic">No matches.</span>
-                  )}
+                  {uploadMutation.isSuccess &&
+                    uploadMutation.data &&
+                    uploadMutation.data.detectedSkillCount === 0 && (
+                      <span className="text-xs text-muted-foreground italic">No matches.</span>
+                    )}
                 </div>
-                {uploadMutation.data.extractedTextPreview && (
+                {(uploadMutation.data?.extractedTextPreview || resumeQuery.data?.extractedTextPreview) && (
                   <details className="text-[10px] font-mono text-muted-foreground/80 cursor-pointer pt-2">
                     <summary className="hover:text-white transition-colors">
                       View extracted preview
                     </summary>
                     <pre className="mt-2 p-3 bg-black/40 rounded-lg overflow-x-auto whitespace-pre-wrap max-h-[150px] leading-relaxed text-left text-muted-foreground select-none">
-                      {uploadMutation.data.extractedTextPreview}
+                      {uploadMutation.data?.extractedTextPreview ??
+                        resumeQuery.data?.extractedTextPreview}
                     </pre>
                   </details>
                 )}
               </div>
-            )}
+            ) : null}
           </div>
         </Reveal>
       </section>
@@ -430,5 +541,64 @@ function DigitalTwin() {
         </div>
       </section>
     </main>
+  );
+}
+
+function PersistenceBadge({ label, active }: { label: string; active: boolean }) {
+  return (
+    <span
+      className={`text-[10px] font-mono uppercase tracking-[0.16em] px-3 py-1.5 rounded-full border ${
+        active
+          ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-300"
+          : "border-white/10 bg-white/5 text-muted-foreground"
+      }`}
+    >
+      {label} · {active ? "Stored" : "Missing"}
+    </span>
+  );
+}
+
+function OverviewMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="glass rounded-2xl p-5 border border-glass-border min-h-32">
+      <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-3">
+        {label}
+      </p>
+      <p className="font-display text-2xl font-bold leading-tight text-white">{value}</p>
+    </div>
+  );
+}
+
+function SnapshotList({
+  title,
+  items,
+  tone,
+}: {
+  title: string;
+  items: string[];
+  tone: "accent" | "muted";
+}) {
+  return (
+    <div className="glass rounded-2xl p-6 border border-glass-border min-h-48">
+      <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground mb-4">
+        {title}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {items.length === 0 ? (
+          <span className="text-xs text-muted-foreground/60">No items yet</span>
+        ) : (
+          items.map((item) => (
+            <span
+              key={item}
+              className={`rounded-full px-3 py-1 text-[11px] font-mono ${
+                tone === "accent" ? "bg-accent/15 text-accent" : "bg-white/10 text-white/70"
+              }`}
+            >
+              {item}
+            </span>
+          ))
+        )}
+      </div>
+    </div>
   );
 }

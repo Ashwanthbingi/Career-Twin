@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,7 +70,10 @@ class ApiIntegrationTest {
                         .param("userId", user.getId().toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.detectedSkillCount", greaterThan(0)))
-                .andExpect(jsonPath("$.detectedSkills", hasSize(greaterThan(0))));
+                .andExpect(jsonPath("$.detectedSkills", hasSize(greaterThan(0))))
+                .andExpect(jsonPath("$.refresh.status").value("REFRESHED"))
+                .andExpect(jsonPath("$.refresh.careerMatchCount", greaterThan(0)))
+                .andExpect(jsonPath("$.refresh.roadmapMilestoneCount", greaterThan(0)));
     }
 
     @Test
@@ -102,6 +104,109 @@ class ApiIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.milestones", hasSize(greaterThan(0))))
                 .andExpect(jsonPath("$.milestones[0].order").value(1));
+    }
+
+    @Test
+    void skillValidationReturnsEvidenceBasedConfidence() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "resume.pdf",
+                "application/pdf",
+                createResumePdf()
+        );
+
+        mockMvc.perform(multipart("/api/resume/upload")
+                        .file(file)
+                        .param("userId", user.getId().toString()))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/skills/validated")
+                        .param("userId", user.getId().toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(greaterThan(0))))
+                .andExpect(jsonPath("$[0].skill").exists())
+                .andExpect(jsonPath("$[0].confidence").exists())
+                .andExpect(jsonPath("$[0].sources").isArray())
+                .andExpect(jsonPath("$[0].evidence").isArray());
+
+        mockMvc.perform(get("/api/skills/confidence-summary")
+                        .param("userId", user.getId().toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.highConfidence").exists())
+                .andExpect(jsonPath("$.mediumConfidence").exists())
+                .andExpect(jsonPath("$.lowConfidence").exists());
+    }
+
+    @Test
+    void getCurrentResumeReturns404WhenMissing() throws Exception {
+        mockMvc.perform(get("/api/resume").param("userId", user.getId().toString()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getCurrentResumeReturnsStoredMetadata() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "resume.pdf",
+                "application/pdf",
+                createResumePdf()
+        );
+
+        mockMvc.perform(multipart("/api/resume/replace")
+                        .file(file)
+                        .param("userId", user.getId().toString()))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/resume").param("userId", user.getId().toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.originalFilename").value("resume.pdf"))
+                .andExpect(jsonPath("$.detectedSkillCount", greaterThan(0)));
+    }
+
+    @Test
+    void skillValidationsEndpointReturnsValidatedSkills() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "resume.pdf",
+                "application/pdf",
+                createResumePdf()
+        );
+
+        mockMvc.perform(multipart("/api/resume/replace")
+                        .file(file)
+                        .param("userId", user.getId().toString()))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/skill-validations")
+                        .param("userId", user.getId().toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(greaterThan(0))))
+                .andExpect(jsonPath("$[0].skill").exists());
+    }
+
+    @Test
+    void digitalTwinReflectsPersistedResumeFlag() throws Exception {
+        mockMvc.perform(get("/api/digital-twin").param("userId", user.getId().toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.hasResume").value(false));
+
+        MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "resume.pdf",
+                "application/pdf",
+                createResumePdf()
+        );
+
+        mockMvc.perform(multipart("/api/resume/replace")
+                        .file(file)
+                        .param("userId", user.getId().toString()))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/digital-twin").param("userId", user.getId().toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.hasResume").value(true))
+                .andExpect(jsonPath("$.userName").exists())
+                .andExpect(jsonPath("$.lastUpdatedAt").exists());
     }
 
     private byte[] createResumePdf() throws Exception {

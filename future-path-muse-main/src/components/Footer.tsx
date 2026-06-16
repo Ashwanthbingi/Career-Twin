@@ -37,8 +37,8 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link to="/career-simulator" className="hover:text-accent transition-colors">
-                Career Simulator
+              <Link to="/skill-validation" className="hover:text-accent transition-colors">
+                Skill Validation
               </Link>
             </li>
             <li>

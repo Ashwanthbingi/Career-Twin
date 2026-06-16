@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import heroImg from "@/assets/hero-twin.jpg";
 import skillImg from "@/assets/skill-graph.jpg";
-import simImg from "@/assets/simulator.jpg";
 import visionImg from "@/assets/vision.jpg";
 import { Reveal } from "@/components/Reveal";
 
@@ -51,10 +50,10 @@ function Landing() {
               Generate My Twin
             </Link>
             <Link
-              to="/career-simulator"
+              to="/skill-validation"
               className="px-8 py-4 glass rounded-xl hover:bg-white/10 transition-colors"
             >
-              Explore Simulator
+              Validate Skills
             </Link>
           </div>
         </div>
@@ -103,7 +102,7 @@ function Landing() {
               <span>·</span>
               <span>Skill graph</span>
               <span>·</span>
-              <span>Career simulation</span>
+              <span>Skill validation</span>
               <span>·</span>
               <span>AI mentor</span>
               <span>·</span>
@@ -138,10 +137,10 @@ function Landing() {
                 img: skillImg,
               },
               {
-                tag: "Simulator",
-                title: "Timeline Sandbox",
-                body: "Run 10,000 simulations of your next move. Forecast salary, fulfillment, and longevity before you commit.",
-                img: simImg,
+                tag: "Validation",
+                title: "Evidence Engine",
+                body: "Validate every extracted skill against resume and GitHub proof before it shapes your twin.",
+                img: skillImg,
               },
               {
                 tag: "AI Mentor",
@@ -181,7 +180,7 @@ function Landing() {
         <div className="max-w-7xl mx-auto glass rounded-[2.5rem] p-12 md:p-20">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
             {[
-              ["10K+", "Simulated futures / user"],
+              ["10K+", "Evidence checks / user"],
               ["42K", "Skill nodes mapped"],
               ["98.4%", "Twin sync fidelity"],
               ["24/7", "AI mentor uptime"],

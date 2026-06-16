@@ -11,13 +11,21 @@ import com.twinos.career.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Configuration
 public class DataSeeder {
+
+    private static final String CAREER_ROLES_CSV = "datasets/career_roles.csv";
 
     @Bean
     CommandLineRunner seedData(
@@ -27,115 +35,162 @@ public class DataSeeder {
             RoleSkillRepository roleSkillRepository
     ) {
         return args -> {
-            if (skillRepository.count() > 0) {
+            if (skillRepository.count() > 0 && jobRoleRepository.count() > 0 && roleSkillRepository.count() > 0) {
                 return;
             }
 
-            Map<String, Skill> skills = seedSkills(skillRepository);
+            RoleDataset roleDataset = loadRoleDataset();
+            Map<String, Skill> skills = seedSkills(skillRepository, roleDataset.skills());
             seedUsers(userRepository);
-            seedJobRoles(jobRoleRepository, roleSkillRepository, skills);
+            seedJobRoles(jobRoleRepository, roleSkillRepository, skills, roleDataset.roleDescriptions(), roleDataset.roleSkills());
         };
     }
 
-    private Map<String, Skill> seedSkills(SkillRepository skillRepository) {
-        List<SkillSeed> seeds = List.of(
-                new SkillSeed("Java", "Technical", "java,spring,hibernate"),
-                new SkillSeed("Python", "Technical", "python,django,flask"),
-                new SkillSeed("JavaScript", "Technical", "javascript,typescript,node.js,react"),
-                new SkillSeed("SQL", "Data", "sql,postgresql,mysql,queries"),
-                new SkillSeed("Machine Learning", "Data", "machine learning,ml,scikit-learn,tensorflow"),
-                new SkillSeed("Data Analysis", "Data", "data analysis,analytics,excel,pandas"),
-                new SkillSeed("Systems Design", "Technical", "systems design,architecture,microservices"),
-                new SkillSeed("Product Strategy", "Leadership", "product strategy,roadmap,product management"),
-                new SkillSeed("Engineering Leadership", "Leadership", "engineering leadership,team lead,mentoring"),
-                new SkillSeed("Negotiation", "Communication", "negotiation,deal-making"),
-                new SkillSeed("Public Speaking", "Communication", "public speaking,presentations,keynote"),
-                new SkillSeed("Project Management", "Leadership", "project management,agile,scrum,jira"),
-                new SkillSeed("Cloud Computing", "Technical", "cloud computing,aws,azure,gcp"),
-                new SkillSeed("DevOps", "Technical", "devops,ci/cd,docker,kubernetes"),
-                new SkillSeed("UI/UX Design", "Technical", "ui/ux,figma,wireframes,prototyping")
-        );
+    private RoleDataset loadRoleDataset() {
+        ClassPathResource resource = new ClassPathResource(CAREER_ROLES_CSV);
+        if (!resource.exists()) {
+            throw new IllegalStateException("Career role dataset not found: " + CAREER_ROLES_CSV);
+        }
 
+        Map<String, String> roleDescriptions = new LinkedHashMap<>();
+        Map<String, String> skillCategories = new LinkedHashMap<>();
+        Map<String, String> skillKeywords = new LinkedHashMap<>();
+        List<RoleSkillSeed> roleSkills = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                resource.getInputStream(),
+                StandardCharsets.UTF_8
+        ))) {
+            String line = reader.readLine();
+            while ((line = reader.readLine()) != null) {
+                List<String> values = parseCsvLine(line);
+                if (values.size() < 5) {
+                    continue;
+                }
+
+                String roleTitle = values.get(0).trim();
+                String roleDescription = values.get(1).trim();
+                String skillName = values.get(2).trim();
+                String skillCategory = values.get(3).trim();
+                String keywords = values.get(4).trim();
+
+                roleDescriptions.putIfAbsent(roleTitle, roleDescription);
+                skillCategories.putIfAbsent(skillName, skillCategory);
+                skillKeywords.putIfAbsent(skillName, keywords);
+                roleSkills.add(new RoleSkillSeed(roleTitle, skillName));
+            }
+        } catch (Exception ex) {
+            throw new IllegalStateException("Failed to load career role dataset: " + CAREER_ROLES_CSV, ex);
+        }
+
+        List<SkillSeed> skills = skillCategories.keySet().stream()
+                .map(name -> new SkillSeed(name, skillCategories.get(name), skillKeywords.getOrDefault(name, "")))
+                .toList();
+
+        return new RoleDataset(
+                skills,
+                roleDescriptions,
+                roleSkills
+        );
+    }
+
+    private Map<String, Skill> seedSkills(SkillRepository skillRepository, List<SkillSeed> seeds) {
         Map<String, Skill> skills = new LinkedHashMap<>();
         for (SkillSeed seed : seeds) {
-            Skill skill = new Skill();
-            skill.setName(seed.name());
-            skill.setCategory(seed.category());
-            skill.setKeywords(seed.keywords());
-            skills.put(seed.name(), skillRepository.save(skill));
+            Skill skill = skillRepository.findByNameIgnoreCase(seed.name())
+                    .orElseGet(() -> {
+                        Skill created = new Skill();
+                        created.setName(seed.name());
+                        created.setCategory(seed.category());
+                        created.setKeywords(seed.keywords());
+                        return skillRepository.save(created);
+                    });
+            skills.put(seed.name(), skill);
         }
         return skills;
     }
 
     private void seedUsers(UserRepository userRepository) {
-        User demoUser = new User();
-        demoUser.setName("Demo User");
-        demoUser.setEmail("demo@twinos.app");
-        userRepository.save(demoUser);
+        if (userRepository.count() == 0) {
+            User demoUser = new User();
+            demoUser.setName("Demo User");
+            demoUser.setEmail("demo@twinos.app");
+            userRepository.save(demoUser);
+        }
     }
 
     private void seedJobRoles(
             JobRoleRepository jobRoleRepository,
             RoleSkillRepository roleSkillRepository,
-            Map<String, Skill> skills
-    ) {
-        createRole(jobRoleRepository, roleSkillRepository, skills,
-                "Software Engineer",
-                "Builds and maintains software applications across the stack.",
-                List.of("Java", "JavaScript", "SQL", "Systems Design", "DevOps"));
-
-        createRole(jobRoleRepository, roleSkillRepository, skills,
-                "Data Scientist",
-                "Analyzes data and builds predictive models to drive decisions.",
-                List.of("Python", "SQL", "Machine Learning", "Data Analysis", "Public Speaking"));
-
-        createRole(jobRoleRepository, roleSkillRepository, skills,
-                "Product Manager",
-                "Defines product vision and coordinates cross-functional delivery.",
-                List.of("Product Strategy", "Project Management", "Negotiation", "Public Speaking", "Data Analysis"));
-
-        createRole(jobRoleRepository, roleSkillRepository, skills,
-                "Engineering Manager",
-                "Leads engineering teams and drives technical execution.",
-                List.of("Engineering Leadership", "Systems Design", "Project Management", "Negotiation", "Java"));
-
-        createRole(jobRoleRepository, roleSkillRepository, skills,
-                "Cloud Architect",
-                "Designs scalable cloud infrastructure and platform solutions.",
-                List.of("Cloud Computing", "Systems Design", "DevOps", "Java", "SQL"));
-
-        createRole(jobRoleRepository, roleSkillRepository, skills,
-                "UX Designer",
-                "Designs intuitive user experiences and interaction flows.",
-                List.of("UI/UX Design", "Public Speaking", "Product Strategy", "JavaScript", "Data Analysis"));
-    }
-
-    private void createRole(
-            JobRoleRepository jobRoleRepository,
-            RoleSkillRepository roleSkillRepository,
             Map<String, Skill> skills,
-            String title,
-            String description,
-            List<String> requiredSkillNames
+            Map<String, String> roleDescriptions,
+            List<RoleSkillSeed> roleSkillSeeds
     ) {
-        JobRole role = new JobRole();
-        role.setTitle(title);
-        role.setDescription(description);
-        role = jobRoleRepository.save(role);
+        Map<String, JobRole> roles = new LinkedHashMap<>();
+        for (RoleSkillSeed seed : roleSkillSeeds) {
+            roles.putIfAbsent(seed.roleTitle(), jobRoleRepository.findByTitleIgnoreCase(seed.roleTitle())
+                    .orElseGet(() -> {
+                        JobRole role = new JobRole();
+                        role.setTitle(seed.roleTitle());
+                        role.setDescription(roleDescriptions.getOrDefault(seed.roleTitle(), ""));
+                        return jobRoleRepository.save(role);
+                    }));
+        }
 
-        for (String skillName : requiredSkillNames) {
-            Skill skill = skills.get(skillName);
-            if (skill == null) {
+        for (RoleSkillSeed seed : roleSkillSeeds) {
+            JobRole role = roles.get(seed.roleTitle());
+            Skill skill = skills.get(seed.skillName());
+            if (role == null || skill == null) {
                 continue;
             }
 
-            RoleSkill roleSkill = new RoleSkill();
-            roleSkill.setRole(role);
-            roleSkill.setSkill(skill);
-            roleSkillRepository.save(roleSkill);
+            if (roleSkillRepository.findByRoleIdAndSkillId(role.getId(), skill.getId()).isEmpty()) {
+                RoleSkill roleSkill = new RoleSkill();
+                roleSkill.setRole(role);
+                roleSkill.setSkill(skill);
+                roleSkillRepository.save(roleSkill);
+            }
         }
     }
 
+    private List<String> parseCsvLine(String line) {
+        List<String> values = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        boolean inQuotes = false;
+
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if (c == '"') {
+                inQuotes = !inQuotes;
+                continue;
+            }
+
+            if (c == ',' && !inQuotes) {
+                values.add(current.toString().trim());
+                current.setLength(0);
+                continue;
+            }
+
+            current.append(c);
+        }
+
+        values.add(current.toString().trim());
+        return values;
+    }
+
+    private record RoleDataset(List<SkillSeed> skills, Map<String, String> roleDescriptions, List<RoleSkillSeed> roleSkills) {
+    }
+
     private record SkillSeed(String name, String category, String keywords) {
+        String normalized() {
+            return normalize(name);
+        }
+
+        private String normalize(String value) {
+            return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
+        }
+    }
+
+    private record RoleSkillSeed(String roleTitle, String skillName) {
     }
 }

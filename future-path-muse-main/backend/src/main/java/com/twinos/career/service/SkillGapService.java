@@ -3,11 +3,10 @@ package com.twinos.career.service;
 import com.twinos.career.dto.SkillDto;
 import com.twinos.career.dto.SkillGapResponse;
 import com.twinos.career.entity.JobRole;
-import com.twinos.career.entity.Skill;
+import com.twinos.career.entity.RoleSkill;
 import com.twinos.career.exception.ResourceNotFoundException;
 import com.twinos.career.repository.JobRoleRepository;
 import com.twinos.career.repository.RoleSkillRepository;
-import com.twinos.career.repository.SkillRepository;
 import com.twinos.career.repository.UserRepository;
 import com.twinos.career.repository.UserSkillRepository;
 import org.springframework.stereotype.Service;
@@ -24,20 +23,17 @@ public class SkillGapService {
     private final UserSkillRepository userSkillRepository;
     private final JobRoleRepository jobRoleRepository;
     private final RoleSkillRepository roleSkillRepository;
-    private final SkillRepository skillRepository;
 
     public SkillGapService(
             UserRepository userRepository,
             UserSkillRepository userSkillRepository,
             JobRoleRepository jobRoleRepository,
-            RoleSkillRepository roleSkillRepository,
-            SkillRepository skillRepository
+            RoleSkillRepository roleSkillRepository
     ) {
         this.userRepository = userRepository;
         this.userSkillRepository = userSkillRepository;
         this.jobRoleRepository = jobRoleRepository;
         this.roleSkillRepository = roleSkillRepository;
-        this.skillRepository = skillRepository;
     }
 
     public SkillGapResponse analyzeSkillGap(Long userId, Long targetRoleId) {
@@ -49,17 +45,16 @@ public class SkillGapService {
                 .orElseThrow(() -> new ResourceNotFoundException("Job role not found: " + targetRoleId));
 
         Set<Long> userSkillIds = new HashSet<>(userSkillRepository.findSkillIdsByUserId(userId));
-        List<Long> requiredSkillIds = roleSkillRepository.findSkillIdsByRoleId(targetRoleId);
+        List<RoleSkill> requirements = roleSkillRepository.findRequirementsByRoleId(targetRoleId);
 
         List<SkillDto> matchedSkills = new ArrayList<>();
         List<SkillDto> missingSkills = new ArrayList<>();
 
-        for (Long skillId : requiredSkillIds) {
-            Skill skill = skillRepository.findById(skillId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Skill not found: " + skillId));
+        for (RoleSkill requirement : requirements) {
+            var skill = requirement.getSkill();
             SkillDto dto = new SkillDto(skill.getId(), skill.getName(), skill.getCategory());
 
-            if (userSkillIds.contains(skillId)) {
+            if (userSkillIds.contains(skill.getId())) {
                 matchedSkills.add(dto);
             } else {
                 missingSkills.add(dto);

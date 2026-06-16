@@ -8,4 +8,7 @@ public record RoadmapResponse(
         String targetRoleTitle,
         List<RoadmapMilestoneDto> milestones
 ) {
+        public static RoadmapResponse empty() {
+                return new RoadmapResponse(0L, 0L, "", List.of());
+        }
 }

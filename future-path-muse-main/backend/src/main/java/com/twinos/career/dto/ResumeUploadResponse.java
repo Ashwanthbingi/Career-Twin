@@ -6,6 +6,7 @@ public record ResumeUploadResponse(
         Long userId,
         int detectedSkillCount,
         List<SkillDto> detectedSkills,
-        String extractedTextPreview
+        String extractedTextPreview,
+        DigitalTwinRefreshResult refresh
 ) {
 }
