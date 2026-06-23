@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Docker",
+    "category": "Cloud & DevOps",
+    "description": "Containerization platform that packages applications and their dependencies into lightweight, standalone units called containers to guarantee consistent running across environments.",
+    "difficulty": "Medium",
+    "market_demand": "Very High",
+    "core_topics": ["Dockerfile Writing", "Multi-stage Builds", "Container Networking & Volumes", "Docker Compose", "Image Optimization"],
+    "related_skills": ["Kubernetes", "Linux", "CI/CD", "AWS", "GitHub Actions"]
+  },
+  {
+    "name": "Kubernetes",
+    "category": "Cloud & DevOps",
+    "description": "Open-source container orchestration engine for automating deployment, scaling, and management of containerized applications.",
+    "difficulty": "High",
+    "market_demand": "Very High",
+    "core_topics": ["Pods, Services & Deployments", "ConfigMaps & Secrets", "Ingress Controllers", "StatefulSets & Volumes", "Helm Charts"],
+    "related_skills": ["Docker", "Terraform", "AWS EKS", "DevOps", "Prometheus"]
+  },
+  {
+    "name": "AWS Core Services",
+    "category": "Cloud & DevOps",
+    "description": "Amazon Web Services cloud suite including virtual hosting (EC2), object storage (S3), relational databases (RDS), identity management (IAM), and private networks (VPC).",
+    "difficulty": "Medium-High",
+    "market_demand": "Very High",
+    "core_topics": ["EC2 & Autoscaling", "S3 Storage Classes", "VPC Subnets & Gateways", "IAM Policies & Roles", "RDS Configuration"],
+    "related_skills": ["Cloud Architect", "Terraform", "Docker", "Linux"]
+  },
+  {
+    "name": "Terraform",
+    "category": "Cloud & DevOps",
+    "description": "HashiCorp's open-source Infrastructure as Code (IaC) tool that allows developers to define and provision cloud infrastructure using a declarative configuration language (HCL).",
+    "difficulty": "Medium",
+    "market_demand": "High",
+    "core_topics": ["HCL Syntax", "State File Management", "Providers & Resources", "Terraform Modules", "Workspaces & Plan"],
+    "related_skills": ["AWS Core Services", "Kubernetes", "DevOps", "GitHub Actions"]
+  },
+  {
+    "name": "GitHub Actions",
+    "category": "Cloud & DevOps",
+    "description": "CI/CD platform integrated directly into GitHub repos, letting you automate workflows, builds, testing, and deployment directly from your git actions.",
+    "difficulty": "Medium",
+    "market_demand": "High",
+    "core_topics": ["Workflow YAML configuration", "Runners & Environments", "Secrets Management", "Job Steps & Actions", "Cache & Artifacts"],
+    "related_skills": ["Git", "Docker", "AWS Core Services", "Bash Scripting"]
+  }
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Java",
+    "category": "Programming Languages",
+    "description": "Robust, object-oriented, platform-independent language extensively used for enterprise server-side applications, Android app development, and large-scale backend systems.",
+    "difficulty": "Medium",
+    "market_demand": "Very High",
+    "core_topics": ["JVM Memory Management", "Concurrency & Threads", "Garbage Collection", "OOP Design Patterns", "Streams & Lambdas"],
+    "related_skills": ["Spring Boot", "Hibernate", "Maven", "Gradle", "JUnit"]
+  },
+  {
+    "name": "Python",
+    "category": "Programming Languages",
+    "description": "High-level interpreted language known for its readability, versatility, and vast ecosystem. The dominant language in Machine Learning, Data Science, Scripting, and Web backends.",
+    "difficulty": "Low",
+    "market_demand": "Very High",
+    "core_topics": ["Data Structures (Lists, Dicts)", "Decorators & Generators", "List Comprehensions", "Dynamic Typing", "Asynchronous Programming"],
+    "related_skills": ["FastAPI", "Django", "Flask", "Pandas", "NumPy", "PyTorch", "Scikit-Learn"]
+  },
+  {
+    "name": "TypeScript",
+    "category": "Programming Languages",
+    "description": "Strict syntactical superset of JavaScript adding static typing, interfaces, and advanced type constraints. Standard for modern enterprise frontend and full-stack Node.js development.",
+    "difficulty": "Medium",
+    "market_demand": "Very High",
+    "core_topics": ["Interfaces & Types", "Generics", "Strict Null Checking", "Union & Intersection Types", "Decorators"],
+    "related_skills": ["JavaScript", "React", "Next.js", "Node.js", "NestJS", "Vite"]
+  },
+  {
+    "name": "JavaScript",
+    "category": "Programming Languages",
+    "description": "The scripting language of the web. Essential for client-side interactivity and runs server-side via Node.js.",
+    "difficulty": "Low-Medium",
+    "market_demand": "Very High",
+    "core_topics": ["Event Loop & Async/Await", "Closures & Scope", "DOM Manipulation", "ES6+ Syntax", "Promises"],
+    "related_skills": ["React", "HTML5", "CSS3", "Vite", "Node.js", "TypeScript"]
+  },
+  {
+    "name": "SQL",
+    "category": "Programming Languages",
+    "description": "Structured Query Language used to manage, store, query, and manipulate data in relational database management systems.",
+    "difficulty": "Low",
+    "market_demand": "High",
+    "core_topics": ["Joins & Subqueries", "Indexing & Execution Plans", "Transactions & ACID", "Normalization", "Window Functions"],
+    "related_skills": ["MySQL", "PostgreSQL", "Oracle", "JDBC", "Hibernate", "Spring Data JPA"]
+  },
+  {
+    "name": "Go",
+    "category": "Programming Languages",
+    "description": "Compiled, statically typed language designed by Google. Highly popular for cloud-native applications, microservices, containerization tools, and low-latency backend systems.",
+    "difficulty": "Low-Medium",
+    "market_demand": "High",
+    "core_topics": ["Goroutines & Channels", "Interfaces & Structs", "Pointers & Memory", "Error Handling", "Garbage Collection"],
+    "related_skills": ["Docker", "Kubernetes", "gRPC", "Gin", "REST APIs"]
+  }
+]

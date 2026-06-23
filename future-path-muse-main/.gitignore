@@ -20,6 +20,9 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Vercel
+.vercel/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -37,3 +40,5 @@ backend/.tools/
 backend/data/
 backend/application-local.properties
 backend/src/main/resources/application-local.properties
+
+.vercel

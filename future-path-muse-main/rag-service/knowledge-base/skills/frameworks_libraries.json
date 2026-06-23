@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Spring Boot",
+    "category": "Frameworks & Libraries",
+    "description": "An open-source Java-based framework used to create microservices and web apps. It simplifies development by offering auto-configuration, starter dependencies, and production-ready features.",
+    "difficulty": "Medium-High",
+    "market_demand": "Very High",
+    "core_topics": ["Dependency Injection (IOC)", "Spring MVC / REST Controllers", "Spring Data JPA & Hibernate", "Spring Security", "AOP & Transactions"],
+    "related_skills": ["Java", "SQL", "MySQL", "Docker", "Webflux", "JUnit"]
+  },
+  {
+    "name": "React",
+    "category": "Frameworks & Libraries",
+    "description": "Popular component-based JavaScript library for building responsive user interfaces, developed and maintained by Meta.",
+    "difficulty": "Medium",
+    "market_demand": "Very High",
+    "core_topics": ["State & Props", "React Hooks (useState, useEffect, useContext)", "Virtual DOM", "Component Lifecycle", "Routing & Context API"],
+    "related_skills": ["JavaScript", "TypeScript", "Vite", "TailwindCSS", "Next.js", "Redux"]
+  },
+  {
+    "name": "Next.js",
+    "category": "Frameworks & Libraries",
+    "description": "Vercel-built React framework supporting Server-Side Rendering (SSR), Static Site Generation (SSG), and API routes out of the box.",
+    "difficulty": "Medium-High",
+    "market_demand": "Very High",
+    "core_topics": ["Server Components vs Client Components", "App Router & Routing", "SSR / SSG / ISR", "Data Fetching & Caching", "Middleware & Optimization"],
+    "related_skills": ["React", "TypeScript", "TailwindCSS", "Node.js", "Vercel"]
+  },
+  {
+    "name": "FastAPI",
+    "category": "Frameworks & Libraries",
+    "description": "Modern, fast (high-performance) web framework for building APIs with Python 3.8+ based on standard Python type hints.",
+    "difficulty": "Low",
+    "market_demand": "High",
+    "core_topics": ["Asynchronous Request Handling", "Pydantic Validation", "Dependency Injection", "Automatic OpenAPI Docs", "CORS Configuration"],
+    "related_skills": ["Python", "Uvicorn", "ChromaDB", "Pydantic", "SQLAlchemy"]
+  },
+  {
+    "name": "Hibernate",
+    "category": "Frameworks & Libraries",
+    "description": "Object-Relational Mapping (ORM) framework for Java, mapping object-oriented models to relational databases.",
+    "difficulty": "High",
+    "market_demand": "High",
+    "core_topics": ["Entity Lifecycle", "First & Second Level Caching", "Lazy vs Eager Fetching", "JPQL & Criteria API", "Transaction Management"],
+    "related_skills": ["Java", "Spring Boot", "SQL", "Spring Data JPA"]
+  }
+]

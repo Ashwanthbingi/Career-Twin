@@ -1,0 +1,33 @@
+{
+  "role": "Software Engineer",
+  "aliases": ["SDE", "Software Developer", "Full Stack Developer"],
+  "description": "Generalist developer responsible for building end-to-end applications, solving business problems with code, and designing systems that scale.",
+  "required_skills": {
+    "core": ["Java", "Python", "JavaScript", "TypeScript", "SQL"],
+    "frameworks": ["Spring Boot", "React", "Next.js"],
+    "tools": ["Git", "Docker", "GitHub Actions"],
+    "soft_skills": ["Problem Solving", "Team Collaboration"]
+  },
+  "experience_levels": {
+    "junior": {
+      "years": "0-2",
+      "expectations": "Focus on writing clean, readable code, learning frameworks, completing discrete tasks, and cooperating with peer code reviews."
+    },
+    "mid": {
+      "years": "2-5",
+      "expectations": "Own whole features from API to UI, design robust database models, review pull requests, and deploy applications to staging environments."
+    },
+    "senior": {
+      "years": "5+",
+      "expectations": "Design scalable system architectures, lead cross-functional code decisions, mentor junior engineers, and configure cloud topologies."
+    }
+  },
+  "career_progression": ["Junior Software Engineer", "Software Engineer II", "Senior Software Engineer", "Staff Engineer", "Principal Engineer"],
+  "interview_focus": ["Data Structures & Algorithms", "System Design", "Behavioral Questions"],
+  "salary_range": {
+    "entry": "$70,000 - $95,000",
+    "mid": "$95,000 - $140,000",
+    "senior": "$140,000 - $210,000"
+  },
+  "related_roles": ["Backend Engineer", "Fullstack Engineer", "DevOps Engineer"]
+}

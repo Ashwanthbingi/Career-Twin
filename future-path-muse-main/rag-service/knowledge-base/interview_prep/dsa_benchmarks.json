@@ -1,0 +1,34 @@
+[
+  {
+    "topic": "Arrays & Hashing",
+    "difficulty_level": "Low-Medium",
+    "target_solved_count": 30,
+    "key_patterns": ["Two Pointers", "Sliding Window", "Prefix Sums", "Frequency Maps"],
+    "common_questions": ["Two Sum", "Group Anagrams", "Container With Most Water"],
+    "importance": "High"
+  },
+  {
+    "topic": "Trees & Graphs",
+    "difficulty_level": "Medium-High",
+    "target_solved_count": 25,
+    "key_patterns": ["Depth First Search (DFS)", "Breadth First Search (BFS)", "Binary Search Trees", "Topological Sort"],
+    "common_questions": ["Invert Binary Tree", "Validate BST", "Number of Islands"],
+    "importance": "Very High"
+  },
+  {
+    "topic": "Dynamic Programming",
+    "difficulty_level": "High",
+    "target_solved_count": 20,
+    "key_patterns": ["1D Dynamic Programming", "2D Dynamic Programming", "Memoization vs Tabulation", "Knapsack / Subset Sum"],
+    "common_questions": ["Climbing Stairs", "Longest Common Subsequence", "Coin Change"],
+    "importance": "Medium-High"
+  },
+  {
+    "topic": "System Design",
+    "difficulty_level": "High",
+    "target_solved_count": 15,
+    "key_patterns": ["Sharding & Partitioning", "Caching", "Load Balancing", "Consistent Hashing", "Message Queues"],
+    "common_questions": ["Design TinyURL", "Design Twitter/Instagram feed", "Design Rate Limiter"],
+    "importance": "Very High"
+  }
+]
