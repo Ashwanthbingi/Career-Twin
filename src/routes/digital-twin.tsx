@@ -8,7 +8,9 @@ import { useDigitalTwin } from "@/hooks/useDigitalTwin";
 import { useCurrentResume } from "@/hooks/useCurrentResume";
 import { useRefreshDigitalTwin } from "@/hooks/useRefreshDigitalTwin";
 import { useResumeUpload } from "@/hooks/useResumeUpload";
-import { AlertCircle, Database, RefreshCw, Upload, CheckCircle } from "lucide-react";
+import { useRagResumeAnalysis, useTriggerRagResumeAnalysis } from "@/hooks/useRagResumeAnalysis";
+import { useRagCareerRecommendation, useTriggerRagCareerRecommendation } from "@/hooks/useRagCareerRecommendation";
+import { AlertCircle, Database, RefreshCw, Upload, CheckCircle, Brain, Award, AlertTriangle, Activity, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/digital-twin")({
@@ -39,9 +41,36 @@ function DigitalTwin() {
   const refreshMutation = useRefreshDigitalTwin();
   const uploadMutation = useResumeUpload();
 
+  const ragResumeQuery = useRagResumeAnalysis(1);
+  const ragCareerQuery = useRagCareerRecommendation(1);
+  const triggerResumeMutation = useTriggerRagResumeAnalysis();
+  const triggerCareerMutation = useTriggerRagCareerRecommendation();
+
   const [dragActive, setDragActive] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isSyncingAI, setIsSyncingAI] = useState(false);
+
+  const handleTriggerAISynapse = () => {
+    setIsSyncingAI(true);
+    toast.promise(
+      Promise.all([
+        triggerResumeMutation.mutateAsync(1),
+        triggerCareerMutation.mutateAsync(1),
+      ]),
+      {
+        loading: "Running RAG Synapse Engine...",
+        success: () => {
+          setIsSyncingAI(false);
+          return "RAG career models synced successfully!";
+        },
+        error: (err) => {
+          setIsSyncingAI(false);
+          return `Failed to run cognitive RAG: ${err instanceof Error ? err.message : "Service offline"}`;
+        }
+      }
+    );
+  };
 
   const handleFile = (file: File) => {
     if (!file.type.includes("pdf") && !file.name.endsWith(".pdf")) {
@@ -151,7 +180,7 @@ function DigitalTwin() {
             <p className="text-sm text-muted-foreground leading-relaxed">
               We couldn't connect to the digital twin service at{" "}
               <code className="text-accent bg-white/5 px-1.5 py-0.5 rounded font-mono">
-                http://localhost:8080
+                {import.meta.env.VITE_API_URL || "http://localhost:8080"}
               </code>
               . Please ensure the backend is running.
             </p>
@@ -350,6 +379,157 @@ function DigitalTwin() {
         <div className="max-w-7xl mx-auto mt-4 text-right text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
           Last Updated {twin.lastUpdatedAt ? new Date(twin.lastUpdatedAt).toLocaleString() : "Pending"}
         </div>
+      </section>
+
+      {/* AI Synaptic Insights Section */}
+      <section className="pt-12 px-6 max-w-7xl mx-auto">
+        <Reveal>
+          <div className="glass rounded-[2.5rem] p-8 md:p-10 border border-glass-border">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+              <div>
+                <h3 className="font-display text-2xl font-bold text-white flex items-center gap-2">
+                  <Brain className="size-5 text-accent animate-pulse" />
+                  Cognitive RAG Synapse
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1 max-w-2xl">
+                  Retrieve context from vector base indexing + LLM generative analytics. Computes hidden strengths, missing competencies, and evidenced suitability pathways.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleTriggerAISynapse}
+                disabled={isSyncingAI}
+                className="rounded-full bg-accent/20 border border-accent/30 hover:bg-accent/30 px-5 py-2.5 text-xs font-semibold text-accent transition-all duration-200 flex items-center gap-2 cursor-pointer whitespace-nowrap self-start md:self-center"
+              >
+                <Activity className={`size-4 ${isSyncingAI ? "animate-spin" : ""}`} />
+                Run AI Recalibration
+              </button>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Resume Analysis */}
+              <div className="space-y-6 bg-white/5 p-6 rounded-2xl border border-white/5">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-display font-semibold text-white flex items-center gap-2">
+                    <Award className="size-4 text-accent" />
+                    Deep Resume Synapse
+                  </h4>
+                  <span className="text-[9px] font-mono uppercase text-muted-foreground px-2 py-0.5 rounded border border-white/10">
+                    24h TTL Cache
+                  </span>
+                </div>
+
+                {ragResumeQuery.isLoading ? (
+                  <div className="space-y-3 py-4">
+                    <div className="h-4 bg-white/10 rounded w-3/4 animate-pulse" />
+                    <div className="h-16 bg-white/5 rounded animate-pulse" />
+                    <div className="h-4 bg-white/10 rounded w-1/2 animate-pulse" />
+                  </div>
+                ) : ragResumeQuery.data ? (
+                  <div className="space-y-4">
+                    <p className="text-xs leading-relaxed text-white/80 italic bg-black/20 p-3 rounded-xl border border-white/5">
+                      "{ragResumeQuery.data.summary}"
+                    </p>
+
+                    <div>
+                      <h5 className="text-[10px] font-mono uppercase tracking-wider text-accent mb-2">Inferred / Hidden Skills</h5>
+                      <div className="flex flex-wrap gap-1.5">
+                        {ragResumeQuery.data.inferredSkills.map((s, idx) => (
+                          <span key={idx} className="text-[10px] font-mono px-2 py-1 bg-accent/10 border border-accent/20 rounded text-accent" title={`Evidence: ${s.evidence}`}>
+                            {s.name} (Inferred)
+                          </span>
+                        ))}
+                        {ragResumeQuery.data.hiddenSkills.map((s, idx) => (
+                          <span key={idx} className="text-[10px] font-mono px-2 py-1 bg-white/5 border border-white/10 rounded text-white/70" title={`Evidence: ${s.evidence}`}>
+                            {s.name} (Hidden)
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <h5 className="text-[10px] font-mono uppercase tracking-wider text-accent mb-2 flex items-center gap-1">
+                          <ShieldCheck className="size-3 text-emerald-400" /> Strengths
+                        </h5>
+                        <ul className="space-y-1.5 text-xs text-muted-foreground">
+                          {ragResumeQuery.data.strengths.slice(0, 2).map((s, idx) => (
+                            <li key={idx} className="bg-black/10 p-2.5 rounded-lg border border-white/5">
+                              <span className="font-semibold text-white/95 block text-[11px]">{s.area} ({s.score}%)</span>
+                              <span className="text-[10px] leading-tight block mt-0.5">{s.evidence}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="text-[10px] font-mono uppercase tracking-wider text-accent mb-2 flex items-center gap-1">
+                          <AlertTriangle className="size-3 text-amber-400" /> Gaps
+                        </h5>
+                        <ul className="space-y-1.5 text-xs text-muted-foreground">
+                          {ragResumeQuery.data.weaknesses.slice(0, 2).map((w, idx) => (
+                            <li key={idx} className="bg-black/10 p-2.5 rounded-lg border border-white/5">
+                              <span className="font-semibold text-white/95 block text-[11px]">{w.area} (Gap)</span>
+                              <span className="text-[10px] leading-tight block mt-0.5">{w.evidence}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground py-6 text-center italic">Run AI Recalibration to generate resume insights.</p>
+                )}
+              </div>
+
+              {/* Career recommendations */}
+              <div className="space-y-6 bg-white/5 p-6 rounded-2xl border border-white/5">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-display font-semibold text-white flex items-center gap-2">
+                    <Brain className="size-4 text-accent" />
+                    Generative Career Recommendation
+                  </h4>
+                  <span className="text-[9px] font-mono uppercase text-muted-foreground px-2 py-0.5 rounded border border-white/10">
+                    evidence backed
+                  </span>
+                </div>
+
+                {ragCareerQuery.isLoading ? (
+                  <div className="space-y-3 py-4">
+                    <div className="h-4 bg-white/10 rounded w-3/4 animate-pulse" />
+                    <div className="h-16 bg-white/5 rounded animate-pulse" />
+                    <div className="h-4 bg-white/10 rounded w-1/2 animate-pulse" />
+                  </div>
+                ) : ragCareerQuery.data ? (
+                  <div className="space-y-4">
+                    <p className="text-xs leading-relaxed text-white/80 italic bg-black/20 p-3 rounded-xl border border-white/5">
+                      "{ragCareerQuery.data.summary}"
+                    </p>
+
+                    <div className="space-y-3">
+                      {ragCareerQuery.data.recommendations.map((rec, idx) => (
+                        <div key={idx} className="bg-black/20 p-4 rounded-xl border border-white/5 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <h5 className="font-semibold text-white text-sm">{rec.role}</h5>
+                            <span className="text-xs font-mono font-bold text-accent">{rec.score}% Match</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground leading-relaxed">
+                            {rec.reasoning}
+                          </p>
+                          <div className="pt-1.5 flex flex-wrap gap-2 text-[10px] text-accent font-mono">
+                            <span className="border border-accent/20 px-2 py-0.5 rounded">Gaps: {rec.gaps.length}</span>
+                            <span className="border border-accent/20 px-2 py-0.5 rounded">Steps: {rec.nextSteps.length}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground py-6 text-center italic">Run AI Recalibration to discover career recommendations.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </Reveal>
       </section>
 
       {/* Resume Upload Sync Widget */}

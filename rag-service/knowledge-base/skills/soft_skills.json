@@ -1,0 +1,29 @@
+[
+  {
+    "name": "Problem Solving",
+    "category": "Soft Skills",
+    "description": "The cognitive capability to structure complex programming logic, trace defects logically, and devise efficient algorithmic solutions to business problems.",
+    "difficulty": "N/A",
+    "market_demand": "Very High",
+    "core_topics": ["Analytical Thinking", "Troubleshooting & Debugging", "First-principles Reasoning", "Systems Decomposition"],
+    "related_skills": ["Algorithms", "Data Structures", "Code Review"]
+  },
+  {
+    "name": "Team Collaboration",
+    "category": "Soft Skills",
+    "description": "Collaborative agility to work in cross-functional agile teams, communicate technical concepts clearly, and review team output supportively.",
+    "difficulty": "N/A",
+    "market_demand": "Very High",
+    "core_topics": ["Active Listening", "Agile & Scrum Methodologies", "Git workflows & Peer Reviews", "Constructive Feedback"],
+    "related_skills": ["Git", "Communication", "Technical Writing"]
+  },
+  {
+    "name": "System Design & Decomposition",
+    "category": "Soft Skills",
+    "description": "Ability to design distributed architectures, establish separation of concerns, and analyze system performance constraints.",
+    "difficulty": "High",
+    "market_demand": "Very High",
+    "core_topics": ["Microservices Partitioning", "API Versioning", "Data Consistency Planning", "Scalability Bottlenecks Analysis"],
+    "related_skills": ["Systems Design", "Spring Boot", "AWS Core Services"]
+  }
+]

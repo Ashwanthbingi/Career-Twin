@@ -1,0 +1,33 @@
+{
+  "role": "Fullstack Engineer",
+  "aliases": ["Full Stack Engineer", "Web Engineer", "Fullstack Developer"],
+  "description": "Developer who builds both customer-facing interfaces and backend infrastructure, managing the end-to-end data flow from client inputs to persistence.",
+  "required_skills": {
+    "core": ["TypeScript", "JavaScript", "Java", "SQL", "HTML5", "CSS3"],
+    "frameworks": ["React", "Next.js", "Spring Boot", "FastAPI"],
+    "tools": ["Git", "Vite", "Docker", "TailwindCSS"],
+    "soft_skills": ["Problem Solving", "Team Collaboration"]
+  },
+  "experience_levels": {
+    "junior": {
+      "years": "0-2",
+      "expectations": "Focus on component updates, simple backend CRUD endpoints, style adjustments, and writing basic fetch callbacks."
+    },
+    "mid": {
+      "years": "2-5",
+      "expectations": "Implement full client-server integrations, design state sync mechanisms, build database entities, and configure client validation filters."
+    },
+    "senior": {
+      "years": "5+",
+      "expectations": "Design client architecture (e.g. bundle size optimization), structure modular services, implement API caching protocols, and optimize client responsiveness."
+    }
+  },
+  "career_progression": ["Junior Fullstack Engineer", "Fullstack Engineer II", "Senior Fullstack Engineer", "Staff Engineer", "Principal Architect"],
+  "interview_focus": ["Frontend State Management", "System Integration & APIs", "Database design", "CSS layout logic"],
+  "salary_range": {
+    "entry": "$75,000 - $105,000",
+    "mid": "$105,000 - $150,000",
+    "senior": "$150,000 - $225,000"
+  },
+  "related_roles": ["Software Engineer", "Backend Engineer", "Frontend Engineer"]
+}

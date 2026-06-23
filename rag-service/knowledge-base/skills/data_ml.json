@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Machine Learning Core",
+    "category": "Data & ML",
+    "description": "Fundamental algorithms and mathematical concepts behind machine learning, including supervised and unsupervised learning, optimization, and regression models.",
+    "difficulty": "High",
+    "market_demand": "High",
+    "core_topics": ["Supervised Learning (Regression, Classification)", "Unsupervised Learning (K-Means, PCA)", "Feature Engineering", "Model Evaluation Metrics (F1, ROC, AUC)", "Overfitting & Regularization"],
+    "related_skills": ["Python", "NumPy", "Pandas", "Scikit-Learn", "PyTorch"]
+  },
+  {
+    "name": "Sentence Transformers",
+    "category": "Data & ML",
+    "description": "Python framework for state-of-the-art sentence, text and image embeddings. Crucial for semantic search, document matching, and Retrieval-Augmented Generation (RAG) applications.",
+    "difficulty": "Medium",
+    "market_demand": "High",
+    "core_topics": ["Vector Embeddings", "Cosine Similarity", "Dense Retrieval", "Fine-tuning Bi-Encoders", "Hugging Face integration"],
+    "related_skills": ["Python", "ChromaDB", "LLM Integration", "NLP"]
+  },
+  {
+    "name": "ChromaDB",
+    "category": "Data & ML",
+    "description": "Open-source AI-native vector database designed to store, manage, and query dense vector embeddings alongside document content and metadata in developer environments.",
+    "difficulty": "Medium",
+    "market_demand": "Medium-High",
+    "core_topics": ["Vector Indexing", "Collection Operations", "Metadata Filtering", "Embedding Functions", "Query Scaling"],
+    "related_skills": ["Sentence Transformers", "Python", "FastAPI", "LLM Integration"]
+  },
+  {
+    "name": "Pandas & NumPy",
+    "category": "Data & ML",
+    "description": "Fundamental python data structures and operations for numerical arrays (NumPy) and structured table manipulation (Pandas).",
+    "difficulty": "Low-Medium",
+    "market_demand": "High",
+    "core_topics": ["DataFrames & Series", "Vectorized Array Operations", "Data Aggregation & Grouping", "Missing Value Imputation", "Broadcasting"],
+    "related_skills": ["Python", "Scikit-Learn", "Matplotlib", "Data Analysis"]
+  }
+]

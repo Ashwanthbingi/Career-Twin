@@ -1,0 +1,42 @@
+[
+  {
+    "role": "Software Engineer",
+    "region": "US National",
+    "entry_level_avg": 85000,
+    "mid_level_avg": 125000,
+    "senior_level_avg": 175000,
+    "principal_level_avg": 240000,
+    "growth_rate_pct": 11.5,
+    "currency": "USD"
+  },
+  {
+    "role": "Backend Engineer",
+    "region": "US National",
+    "entry_level_avg": 90000,
+    "mid_level_avg": 135000,
+    "senior_level_avg": 185000,
+    "principal_level_avg": 260000,
+    "growth_rate_pct": 12.0,
+    "currency": "USD"
+  },
+  {
+    "role": "Cloud Architect",
+    "region": "US National",
+    "entry_level_avg": 105000,
+    "mid_level_avg": 155000,
+    "senior_level_avg": 205000,
+    "principal_level_avg": 280000,
+    "growth_rate_pct": 14.2,
+    "currency": "USD"
+  },
+  {
+    "role": "DevOps Engineer",
+    "region": "US National",
+    "entry_level_avg": 95000,
+    "mid_level_avg": 140000,
+    "senior_level_avg": 190000,
+    "principal_level_avg": 255000,
+    "growth_rate_pct": 13.0,
+    "currency": "USD"
+  }
+]

@@ -1,0 +1,33 @@
+{
+  "role": "Cloud Architect",
+  "aliases": ["Enterprise Cloud Architect", "AWS Solutions Architect", "Solutions Architect"],
+  "description": "Architect responsible for designing, configuring, and managing enterprise cloud computing environments, choosing service options, and ensuring reliable, cost-efficient scaling.",
+  "required_skills": {
+    "core": ["Python", "SQL", "Go", "Bash Scripting"],
+    "frameworks": ["AWS Core Services", "Terraform", "Docker", "Kubernetes"],
+    "tools": ["Git", "CloudFormation", "Helm", "Prometheus"],
+    "soft_skills": ["System Design & Decomposition", "Team Collaboration"]
+  },
+  "experience_levels": {
+    "junior": {
+      "years": "0-2",
+      "expectations": "Focus on setting up IAM policies, maintaining EC2 configuration, setting up VPC subnets, and writing simple Terraform declarations."
+    },
+    "mid": {
+      "years": "2-5",
+      "expectations": "Design autoscaling architectures, integrate multiple cloud systems (e.g. S3 to RDS to ECS), implement security audits, and scale load balancers."
+    },
+    "senior": {
+      "years": "5+",
+      "expectations": "Lead corporate cloud migration strategy, optimize multi-million dollar budgets, establish global multi-region failovers, and write custom Terraform provider scripts."
+    }
+  },
+  "career_progression": ["Junior Cloud Engineer", "Cloud Engineer II", "Cloud Architect", "Senior Cloud Architect", "Principal Architect"],
+  "interview_focus": ["High Availability Design", "Cloud Networking & Gateways", "Cost Optimization Patterns", "IAM Security Structures"],
+  "salary_range": {
+    "entry": "$90,000 - $120,000",
+    "mid": "$120,000 - $170,000",
+    "senior": "$170,000 - $250,000"
+  },
+  "related_roles": ["DevOps Engineer", "Backend Engineer", "Site Reliability Engineer"]
+}

@@ -1,0 +1,33 @@
+{
+  "role": "DevOps Engineer",
+  "aliases": ["DevOps Architect", "Infrastructure Engineer", "Platform Engineer"],
+  "description": "Engineer specializing in bridging code development and operational deployment, building automation workflows, managing builds, configuring pipelines, and maintaining system health.",
+  "required_skills": {
+    "core": ["Bash Scripting", "Python", "Go", "YAML"],
+    "frameworks": ["Docker", "Kubernetes", "GitHub Actions", "Terraform"],
+    "tools": ["Git", "Jenkins", "Helm", "Ansible", "Prometheus", "Grafana"],
+    "soft_skills": ["Problem Solving", "Team Collaboration"]
+  },
+  "experience_levels": {
+    "junior": {
+      "years": "0-2",
+      "expectations": "Focus on pipeline script fixes, running manual releases, checking server logs, and writing basic container configurations."
+    },
+    "mid": {
+      "years": "2-5",
+      "expectations": "Configure complete CI/CD systems, implement container scheduling and scaling, configure alert thresholds, and write infrastructure configurations."
+    },
+    "senior": {
+      "years": "5+",
+      "expectations": "Design enterprise-wide orchestration architecture, establish zero-downtime canary deployment routes, optimize build cache speeds, and lead server failure audits."
+    }
+  },
+  "career_progression": ["Associate DevOps Engineer", "DevOps Engineer II", "Senior DevOps Engineer", "Platform Lead", "Principal Engineer"],
+  "interview_focus": ["Linux Command Line", "Orchestration & Pods lifecycle", "Deployment pipelines logic", "Logging & Alerting"],
+  "salary_range": {
+    "entry": "$80,000 - $110,000",
+    "mid": "$110,000 - $160,000",
+    "senior": "$160,000 - $230,000"
+  },
+  "related_roles": ["Cloud Architect", "Site Reliability Engineer", "Backend Engineer"]
+}

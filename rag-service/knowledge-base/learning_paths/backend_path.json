@@ -1,0 +1,42 @@
+{
+  "path_name": "Backend Developer Learning Path",
+  "target_role": "Backend Engineer",
+  "estimated_months": 12,
+  "phases": [
+    {
+      "phase_num": 1,
+      "title": "Language Mastery & Database Core",
+      "duration_months": 3,
+      "milestone": "Build and query a complex multi-table SQL database local script",
+      "recommended_actions": [
+        "Learn core language syntax (Java OOP, collections, exceptions)",
+        "Master SQL syntax (joins, indexes, transactions, execution plans)",
+        "Understand HTTP protocol (REST constraints, headers, request codes)"
+      ]
+    },
+    {
+      "phase_num": 2,
+      "title": "Web Frameworks & API Service Integration",
+      "duration_months": 4,
+      "milestone": "Create a fully functional REST API service with persistence using Spring Boot",
+      "recommended_actions": [
+        "Learn Spring Framework concepts (DI, IoC, Bean lifecycle)",
+        "Implement Object Relational Mapping (Hibernate/Spring Data JPA)",
+        "Implement API security foundations (Basic Auth, JWT)",
+        "Write integration and unit tests using Mockito"
+      ]
+    },
+    {
+      "phase_num": 3,
+      "title": "Systems Scaling & Deployment",
+      "duration_months": 5,
+      "milestone": "Deploy a containerized backend service connected to a persistent cache and DB on a cloud environment",
+      "recommended_actions": [
+        "Learn containerization basics (Dockerfiles, multi-stage builds)",
+        "Integrate caching layers (Redis cache lookup)",
+        "Study message brokers for async jobs (RabbitMQ or Kafka)",
+        "Deploy to a cloud provider (AWS EC2/ECS) using IaC (Terraform)"
+      ]
+    }
+  ]
+}

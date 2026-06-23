@@ -1,0 +1,33 @@
+{
+  "role": "Backend Engineer",
+  "aliases": ["Backend Developer", "Server-Side Engineer", "Java Backend Developer"],
+  "description": "Specialist software engineer focusing on server-side logic, database management, security integration, performance tuning, and API design.",
+  "required_skills": {
+    "core": ["Java", "SQL", "Python", "Go"],
+    "frameworks": ["Spring Boot", "Hibernate", "FastAPI", "Express"],
+    "tools": ["Git", "Docker", "MySQL", "PostgreSQL", "Redis"],
+    "soft_skills": ["Problem Solving", "System Design & Decomposition"]
+  },
+  "experience_levels": {
+    "junior": {
+      "years": "0-2",
+      "expectations": "Focus on database CRUD writing, implementing simple API endpoints, debugging logic errors, and querying data sets."
+    },
+    "mid": {
+      "years": "2-5",
+      "expectations": "Optimize database schemas and SQL query plans, build secure multi-service transaction logic, write unit tests, and integrate cache buffers."
+    },
+    "senior": {
+      "years": "5+",
+      "expectations": "Architect microservices topology, design high-throughput cache topologies, manage asynchronous workers, and review query indexes."
+    }
+  },
+  "career_progression": ["Junior Backend Engineer", "Backend Engineer II", "Senior Backend Engineer", "Lead Backend Developer", "Principal Backend Architect"],
+  "interview_focus": ["System Design & Latency", "Database Normalization & Queries", "Concurrency", "Algorithms"],
+  "salary_range": {
+    "entry": "$75,000 - $100,000",
+    "mid": "$100,000 - $150,000",
+    "senior": "$150,000 - $220,000"
+  },
+  "related_roles": ["Software Engineer", "Cloud Architect", "Database Administrator"]
+}
