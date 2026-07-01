@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/rag")
-@CrossOrigin(origins = "*")
 public class RagController {
 
     private final RagService ragService;

@@ -3,7 +3,6 @@ package com.twinos.career.controller;
 import com.twinos.career.dto.DigitalTwinResponse;
 import com.twinos.career.dto.SkillGraphDto;
 import com.twinos.career.service.DigitalTwinService;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*")
 public class DigitalTwinController {
 
     private final DigitalTwinService digitalTwinService;
