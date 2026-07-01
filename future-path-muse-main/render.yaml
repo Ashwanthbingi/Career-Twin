@@ -1,0 +1,39 @@
+services:
+  # Spring Boot Backend API
+  - type: web
+    name: twinos-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: MYSQL_URL
+        sync: false
+      - key: MYSQL_USER
+        sync: false
+      - key: MYSQL_PASSWORD
+        sync: false
+      - key: RAG_SERVICE_URL
+        sync: false
+    # Optional persistent disk for resumes (requires Starter plan)
+    # disk:
+    #   name: resumes-data
+    #   mountPath: /app/data
+    #   sizeGB: 1
+
+  # FastAPI Python RAG Service (Optional)
+  - type: web
+    name: twinos-rag-service
+    env: python
+    buildCommand: pip install -r rag-service/requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: LLM_PROVIDER
+        value: gemini
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
