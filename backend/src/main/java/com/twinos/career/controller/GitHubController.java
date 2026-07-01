@@ -5,7 +5,6 @@ import com.twinos.career.dto.GitHubAnalysisResponse;
 import com.twinos.career.dto.GitHubProfileResponse;
 import com.twinos.career.service.GitHubAnalyzerService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/github")
-@CrossOrigin(origins = "*")
 public class GitHubController {
 
     private final GitHubAnalyzerService gitHubAnalyzerService;

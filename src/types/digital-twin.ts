@@ -187,3 +187,143 @@ export interface LeetCodeIntelligenceResponse {
   growthTimeline: CodingTimelineDto[];
   updatedAt: string;
 }
+
+export interface RagInferredSkill {
+  name: string;
+  confidence: number;
+  evidence: string;
+}
+
+export interface RagStrength {
+  area: string;
+  score: number;
+  evidence: string;
+}
+
+export interface RagWeakness {
+  area: string;
+  score: number;
+  evidence: string;
+}
+
+export interface RagSuitability {
+  role: string;
+  score: number;
+  reasoning: string;
+}
+
+export interface RagResumeAnalysis {
+  inferredSkills: RagInferredSkill[];
+  hiddenSkills: RagInferredSkill[];
+  strengths: RagStrength[];
+  weaknesses: RagWeakness[];
+  careerSuitability: RagSuitability[];
+  summary: string;
+}
+
+export interface RagVerifiedSkill {
+  name: string;
+  confidence: number;
+  evidence: string;
+}
+
+export interface RagComplexity {
+  score: number;
+  level: string;
+  reasoning: string;
+}
+
+export interface RagMaturity {
+  score: number;
+  level: string;
+  indicators: string[];
+}
+
+export interface RagPortfolioSkill {
+  name: string;
+  importance: string;
+  suggestion: string;
+}
+
+export interface RagGitHubAnalysis {
+  verifiedSkills: RagVerifiedSkill[];
+  projectComplexity: RagComplexity;
+  engineeringMaturity: RagMaturity;
+  missingPortfolioSkills: RagPortfolioSkill[];
+  summary: string;
+}
+
+export interface RagAlgoTopic {
+  topic: string;
+  score: number;
+  assessment?: string;
+  recommendation?: string;
+}
+
+export interface RagReadiness {
+  serviceCompanies: number;
+  productCompanies: number;
+  faangLevel: number;
+  reasoning: string;
+}
+
+export interface RagLeetCodeAnalysis {
+  problemSolvingScore: number;
+  algorithmStrengths: RagAlgoTopic[];
+  algorithmWeaknesses: RagAlgoTopic[];
+  interviewReadiness: RagReadiness;
+  improvementPlan: string[];
+  summary: string;
+}
+
+export interface RagRecommendationEvidence {
+  resume?: string;
+  github?: string;
+  leetcode?: string;
+}
+
+export interface RagRecommendation {
+  role: string;
+  score: number;
+  reasoning: string;
+  evidence: RagRecommendationEvidence;
+  gaps: string[];
+  nextSteps: string[];
+}
+
+export interface RagCareerRecommendation {
+  recommendations: RagRecommendation[];
+  summary: string;
+}
+
+export interface RagEvidenceDetail {
+  source: string;
+  strength: number;
+  detail: string;
+}
+
+export interface RagSkillValidation {
+  skill: string;
+  confidence: number;
+  evidenceSummary: RagEvidenceDetail[];
+  industryContext: string;
+  relatedSkills: string[];
+  growthSuggestions: string[];
+}
+
+export interface RagPhaseDetail {
+  phase: number;
+  title: string;
+  duration: string;
+  skillsToLearn: string[];
+  actions: string[];
+  resources: string[];
+  milestones: string[];
+}
+
+export interface RagRoadmap {
+  targetRole: string;
+  estimatedTimeline: string;
+  phases: RagPhaseDetail[];
+  summary: string;
+}

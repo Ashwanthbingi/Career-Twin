@@ -1,6 +1,6 @@
 import { DigitalTwinResponse } from "../types/digital-twin";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "";
 
 /**
  * Fetches digital twin details for a given user.

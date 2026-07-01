@@ -40,3 +40,5 @@ backend/.tools/
 backend/data/
 backend/application-local.properties
 backend/src/main/resources/application-local.properties
+
+.vercel
