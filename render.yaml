@@ -9,6 +9,12 @@ services:
     envVars:
       - key: PORT
         value: 8080
+      - key: JAVA_TOOL_OPTIONS
+        value: -XX:MaxRAM=384m -XX:MaxRAMPercentage=70 -XX:InitialRAMPercentage=20 -XX:MaxMetaspaceSize=128m -XX:+UseSerialGC -Dspring.main.lazy-initialization=true
+      - key: DB_POOL_SIZE
+        value: 3
+      - key: DB_POOL_MIN_IDLE
+        value: 1
       - key: MYSQL_URL
         sync: false
       - key: MYSQL_USER
