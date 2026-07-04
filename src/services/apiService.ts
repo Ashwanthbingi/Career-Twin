@@ -695,17 +695,60 @@ export async function fetchSkillConfidenceSummary(userId: number): Promise<Skill
 
 export async function analyzeGitHubPortfolio(request: GitHubAnalysisRequest): Promise<GitHubAnalysisResponse> {
   if (!USE_MOCK_BACKEND) {
-    const url = `${API_BASE_URL}/api/github/analyze`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(request),
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || `HTTP error! status: ${response.status}`);
+  // Updated to always fetch live data from GitHub API, no mock fallback
+  const state = getUserState(request.userId);
+  const username = request.githubUsername.trim();
+  let reposCount = 0;
+  let totalStars = 0;
+  let languages: string[] = [];
+  const detectedSkillsSet = new Set<string>();
+  try {
+    const res = await fetch(`https://api.github.com/users/${username}/repos?per_page=100`);
+    if (res.ok) {
+      const data = await res.json();
+      reposCount = data.length;
+      totalStars = data.reduce((acc, repo) => acc + (repo.stargazers_count || 0), 0);
+      const langSet = new Set<string>();
+      for (const repo of data) {
+        if (repo.language) {
+          langSet.add(repo.language);
+          const matchedLang = SKILLS.find(s => s.name.toLowerCase() === repo.language.toLowerCase());
+          if (matchedLang) detectedSkillsSet.add(matchedLang.name);
+        }
+        const text = `${repo.name} ${repo.description || ""}`.toLowerCase();
+        for (const skill of SKILLS) {
+          const keywords = SKILL_KEYWORDS[skill.id];
+          if (keywords.some(kw => text.includes(kw))) {
+            detectedSkillsSet.add(skill.name);
+          }
+        }
+      }
+      languages = Array.from(langSet).slice(0, 8);
+    } else {
+      throw new Error(`GitHub API responded with status ${res.status}`);
     }
-    return response.json();
+  } catch (err) {
+    console.warn("GitHub live API fetch failed", err);
+    throw err;
+  }
+  // Update state with live data
+  state.hasGitHubProfile = true;
+  state.githubUsername = username;
+  state.githubRepositories = reposCount;
+  state.githubStars = totalStars;
+  state.githubLanguages = languages;
+  state.githubSkills = Array.from(detectedSkillsSet);
+  const contributionScore = Math.min(100, reposCount * 3 + Math.min(35, totalStars / 2) + detectedSkillsSet.size * 5);
+  state.githubContributionScore = contributionScore;
+  saveUserState(request.userId, state);
+  return {
+    repositories: reposCount,
+    stars: totalStars,
+    languages,
+    detectedSkills: Array.from(detectedSkillsSet),
+    contributionScore,
+    recommendedRole: "Software Engineer",
+  };
   }
 
   const state = getUserState(request.userId);
@@ -822,90 +865,9 @@ export async function fetchGitHubProfile(userId: number): Promise<GitHubProfileR
 }
 
 export async function analyzeLeetCodeProfile(request: LeetCodeAnalysisRequest): Promise<LeetCodeIntelligenceResponse> {
-  if (!USE_MOCK_BACKEND) {
-    const url = `${API_BASE_URL}/api/leetcode/analyze`;
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(request),
-    });
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(errorText || `HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  }
-
+  // Attempt to fetch real data from LeetCode public GraphQL endpoint
   const state = getUserState(request.userId);
   const username = request.username.trim();
-
-  // Seed deterministic simulation values based on username
-  const seed = username.length * 15;
-  const totalSolved = 75 + (seed % 180);
-  const easySolved = Math.round(totalSolved * 0.45);
-  const mediumSolved = Math.round(totalSolved * 0.45);
-  const hardSolved = totalSolved - easySolved - mediumSolved;
-  const rating = 1450 + (seed % 400);
-  const ranking = 120000 - seed * 100;
-  const problemSolvingScore = Math.min(100, Math.round(totalSolved / 5 + (mediumSolved / 3) + hardSolved * 2));
-
-  const topics = [
-    { topic: "Arrays", score: Math.min(100, 45 + (seed % 40)), solved: Math.round(totalSolved * 0.25) },
-    { topic: "Strings", score: Math.min(100, 35 + (seed % 50)), solved: Math.round(totalSolved * 0.2) },
-    { topic: "Trees", score: Math.min(100, 25 + (seed % 60)), solved: Math.round(totalSolved * 0.15) },
-    { topic: "Graphs", score: Math.min(100, 15 + (seed % 70)), solved: Math.round(totalSolved * 0.1) },
-    { topic: "Dynamic Programming", score: Math.min(100, 10 + (seed % 80)), solved: Math.round(totalSolved * 0.08) },
-    { topic: "Binary Search", score: Math.min(100, 30 + (seed % 55)), solved: Math.round(totalSolved * 0.12) },
-  ];
-
-  const strengths = ["Arrays", "Strings", "Binary Search"];
-  const weaknesses = ["Dynamic Programming", "Graphs"];
-  const timeline = [
-    { label: "Foundation", score: easySolved },
-    { label: "Pattern Depth", score: mediumSolved * 2 },
-    { label: "Hard Problems", score: hardSolved * 8 },
-    { label: "Interview Ready", score: problemSolvingScore },
-  ];
-
-  state.hasLeetCodeProfile = true;
-  state.leetcodeUsername = username;
-  state.leetcodeTotalSolved = totalSolved;
-  state.leetcodeEasySolved = easySolved;
-  state.leetcodeMediumSolved = mediumSolved;
-  state.leetcodeHardSolved = hardSolved;
-  state.leetcodeContestRating = rating;
-  state.leetcodeRanking = ranking;
-  state.leetcodeProblemSolvingScore = problemSolvingScore;
-  state.leetcodeTopicScores = topics;
-  state.leetcodeStrengths = strengths;
-  state.leetcodeWeaknesses = weaknesses;
-  state.leetcodeTimeline = timeline;
-
-  // Add LeetCode as source for linked technical skills
-  const linkedSkills = ["Systems Design", "SQL"];
-  for (const name of linkedSkills) {
-    const skill = SKILLS.find(s => s.name === name);
-    if (skill) {
-      const existing = state.userSkills.find(us => us.skillId === skill.id);
-      if (existing) {
-        if (!existing.sources.includes("leetcode")) {
-          existing.sources.push("leetcode");
-        }
-      } else {
-        state.userSkills.push({ skillId: skill.id, sources: ["leetcode"] });
-      }
-    }
-  }
-
-  saveUserState(request.userId, state);
-
-  return {
-    userId: request.userId,
-    username,
-    totalSolved,
-    easySolved,
-    mediumSolved,
-    hardSolved,
     contestRating: rating,
     ranking,
     problemSolvingScore,
