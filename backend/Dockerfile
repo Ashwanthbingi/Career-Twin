@@ -11,5 +11,5 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-ENV JAVA_TOOL_OPTIONS="-XX:MaxRAM=384m -XX:MaxRAMPercentage=70 -XX:InitialRAMPercentage=20 -XX:MaxMetaspaceSize=128m -XX:+UseSerialGC -Dspring.main.lazy-initialization=true"
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAM=256m -XX:MaxRAMPercentage=70 -XX:InitialRAMPercentage=20 -XX:MaxMetaspaceSize=128m -XX:+UseSerialGC -Dspring.main.lazy-initialization=true"
 ENTRYPOINT ["java", "-jar", "app.jar"]

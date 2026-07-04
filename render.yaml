@@ -10,7 +10,7 @@ services:
       - key: PORT
         value: 8080
       - key: JAVA_TOOL_OPTIONS
-        value: -XX:MaxRAM=384m -XX:MaxRAMPercentage=70 -XX:InitialRAMPercentage=20 -XX:MaxMetaspaceSize=128m -XX:+UseSerialGC -Dspring.main.lazy-initialization=true
+        value: -XX:MaxRAM=256m -XX:MaxRAMPercentage=70 -XX:InitialRAMPercentage=20 -XX:MaxMetaspaceSize=128m -XX:+UseSerialGC -Dspring.main.lazy-initialization=true
       - key: DB_POOL_SIZE
         value: 3
       - key: DB_POOL_MIN_IDLE
@@ -43,3 +43,16 @@ services:
         sync: false
       - key: OPENAI_API_KEY
         sync: false
+
+  # Frontend Vite static site
+  - type: web
+    name: twinos-frontend
+    env: node
+    plan: free
+    buildCommand: yarn build
+    startCommand: yarn preview
+    envVars:
+      - key: PORT
+        value: 8080
+    memory: 256
+    cpu: 0.5
