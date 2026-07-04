@@ -867,19 +867,26 @@ export async function fetchGitHubProfile(userId: number): Promise<GitHubProfileR
 export async function analyzeLeetCodeProfile(request: LeetCodeAnalysisRequest): Promise<LeetCodeIntelligenceResponse> {
   // Attempt to fetch real data from LeetCode public GraphQL endpoint
   const state = getUserState(request.userId);
-  const username = request.username.trim();
-    contestRating: rating,
-    ranking,
-    problemSolvingScore,
+
+  return {
+    userId: state.userId,
+    username: state.leetcodeUsername || request.username,
+    totalSolved: state.leetcodeTotalSolved || 0,
+    easySolved: state.leetcodeEasySolved || 0,
+    mediumSolved: state.leetcodeMediumSolved || 0,
+    hardSolved: state.leetcodeHardSolved || 0,
+    contestRating: state.leetcodeContestRating || 0,
+    ranking: state.leetcodeRanking || 0,
+    problemSolvingScore: state.leetcodeProblemSolvingScore || 0,
     interviewReadiness: {
-      serviceCompanies: Math.min(100, problemSolvingScore + 15),
-      productCompanies: Math.min(100, Math.max(0, problemSolvingScore + 5)),
-      faangLevel: Math.min(100, Math.max(0, problemSolvingScore - 15)),
+      serviceCompanies: Math.min(100, (state.leetcodeProblemSolvingScore || 0) + 15),
+      productCompanies: Math.min(100, Math.max(0, (state.leetcodeProblemSolvingScore || 0) + 5)),
+      faangLevel: Math.min(100, Math.max(0, (state.leetcodeProblemSolvingScore || 0) - 15)),
     },
-    topicBreakdown: topics,
-    strengths,
-    weaknesses,
-    growthTimeline: timeline,
+    topicBreakdown: state.leetcodeTopicScores || [],
+    strengths: state.leetcodeStrengths || [],
+    weaknesses: state.leetcodeWeaknesses || [],
+    growthTimeline: state.leetcodeTimeline || [],
     updatedAt: new Date().toISOString(),
   };
 }
