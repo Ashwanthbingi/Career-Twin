@@ -865,28 +865,107 @@ export async function fetchGitHubProfile(userId: number): Promise<GitHubProfileR
 }
 
 export async function analyzeLeetCodeProfile(request: LeetCodeAnalysisRequest): Promise<LeetCodeIntelligenceResponse> {
-  // Attempt to fetch real data from LeetCode public GraphQL endpoint
+  if (!USE_MOCK_BACKEND) {
+    const url = `${API_BASE_URL}/api/leetcode/analyze`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const errorPayload = await response.text();
+      let errorMessage = errorPayload;
+      try {
+        const parsed = JSON.parse(errorPayload) as { error?: string; message?: string };
+        errorMessage = parsed.error || parsed.message || errorPayload;
+      } catch {
+        // Keep the raw payload if the server did not return JSON.
+      }
+      throw new Error(errorMessage || `HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+  }
+
   const state = getUserState(request.userId);
+  const username = request.username.trim();
+  const usernameSeed = Array.from(username).reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  const totalSolved = Math.max(state.leetcodeTotalSolved, 80 + (usernameSeed % 220));
+  const easySolved = Math.round(totalSolved * 0.42);
+  const mediumSolved = Math.round(totalSolved * 0.45);
+  const hardSolved = Math.max(0, totalSolved - easySolved - mediumSolved);
+  const contestRating = 1350 + (usernameSeed % 650);
+  const ranking = 50000 + (usernameSeed % 900000);
+
+  const topicBreakdown = [
+    "Arrays",
+    "Strings",
+    "Trees",
+    "Graphs",
+    "Dynamic Programming",
+    "Greedy",
+    "Backtracking",
+    "Heap",
+    "Binary Search",
+  ].map((topic, index) => {
+    const solved = Math.max(1, Math.round((totalSolved / 18) + ((usernameSeed + index * 7) % 16)));
+    const score = Math.min(100, solved * 7 + Math.min(20, Math.round(mediumSolved / 8)) + Math.min(15, hardSolved * 2));
+    return { topic, score, solved };
+  });
+
+  const problemSolvingScore = Math.min(
+    100,
+    Math.round(
+      Math.min(35, totalSolved / 5) +
+        Math.min(35, mediumSolved / 3 + hardSolved * 2) +
+        topicBreakdown.reduce((sum, topic) => sum + topic.score, 0) / topicBreakdown.length * 0.2 +
+        Math.min(10, Math.max(0, (contestRating - 1400) / 80)),
+    ),
+  );
+  const sortedTopics = [...topicBreakdown].sort((a, b) => b.score - a.score);
+  const strengths = sortedTopics.slice(0, 3).map((topic) => topic.topic);
+  const weaknesses = sortedTopics.slice(-3).reverse().map((topic) => topic.topic);
+
+  state.hasLeetCodeProfile = true;
+  state.leetcodeUsername = username;
+  state.leetcodeTotalSolved = totalSolved;
+  state.leetcodeEasySolved = easySolved;
+  state.leetcodeMediumSolved = mediumSolved;
+  state.leetcodeHardSolved = hardSolved;
+  state.leetcodeContestRating = contestRating;
+  state.leetcodeRanking = ranking;
+  state.leetcodeProblemSolvingScore = problemSolvingScore;
+  state.leetcodeTopicScores = topicBreakdown;
+  state.leetcodeStrengths = strengths;
+  state.leetcodeWeaknesses = weaknesses;
+  state.leetcodeTimeline = [
+    { label: "Foundation", score: Math.min(100, easySolved) },
+    { label: "Pattern Depth", score: Math.min(100, mediumSolved * 2) },
+    { label: "Hard Problems", score: Math.min(100, hardSolved * 8) },
+    { label: "Interview Ready", score: problemSolvingScore },
+  ];
+  saveUserState(request.userId, state);
 
   return {
     userId: state.userId,
-    username: state.leetcodeUsername || request.username,
-    totalSolved: state.leetcodeTotalSolved || 0,
-    easySolved: state.leetcodeEasySolved || 0,
-    mediumSolved: state.leetcodeMediumSolved || 0,
-    hardSolved: state.leetcodeHardSolved || 0,
-    contestRating: state.leetcodeContestRating || 0,
-    ranking: state.leetcodeRanking || 0,
-    problemSolvingScore: state.leetcodeProblemSolvingScore || 0,
+    username: state.leetcodeUsername,
+    totalSolved: state.leetcodeTotalSolved,
+    easySolved: state.leetcodeEasySolved,
+    mediumSolved: state.leetcodeMediumSolved,
+    hardSolved: state.leetcodeHardSolved,
+    contestRating: state.leetcodeContestRating,
+    ranking: state.leetcodeRanking,
+    problemSolvingScore: state.leetcodeProblemSolvingScore,
     interviewReadiness: {
-      serviceCompanies: Math.min(100, (state.leetcodeProblemSolvingScore || 0) + 15),
-      productCompanies: Math.min(100, Math.max(0, (state.leetcodeProblemSolvingScore || 0) + 5)),
-      faangLevel: Math.min(100, Math.max(0, (state.leetcodeProblemSolvingScore || 0) - 15)),
+      serviceCompanies: Math.min(100, state.leetcodeProblemSolvingScore + 15),
+      productCompanies: Math.min(100, Math.max(0, state.leetcodeProblemSolvingScore + 5)),
+      faangLevel: Math.min(100, Math.max(0, state.leetcodeProblemSolvingScore - 15)),
     },
-    topicBreakdown: state.leetcodeTopicScores || [],
-    strengths: state.leetcodeStrengths || [],
-    weaknesses: state.leetcodeWeaknesses || [],
-    growthTimeline: state.leetcodeTimeline || [],
+    topicBreakdown: state.leetcodeTopicScores,
+    strengths: state.leetcodeStrengths,
+    weaknesses: state.leetcodeWeaknesses,
+    growthTimeline: state.leetcodeTimeline,
     updatedAt: new Date().toISOString(),
   };
 }
